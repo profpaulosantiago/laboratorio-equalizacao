@@ -10,12 +10,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-/* Layout: painel de instrumento em tela cheia — amostras | visores | controles, tudo visível sem rolar. */
+/* Layout: painel de instrumento em tela cheia — visores à esquerda, controles à direita; tudo visível sem rolar. */
 :root{
   --bg:#EDF0F4; --panel:#FFFFFF; --panel-2:#F5F7FA; --ink:#17202A; --muted:#5A6675; --line:#D3DAE2;
   --accent:#1D5DB8; --accent-soft:#E3ECF9; --accent-ink:#FFFFFF;
   --ok:#157A3A; --ok-soft:#E2F4E8; --bad:#B42318; --bad-soft:#FBE7E5; --mid:#A15C00; --mid-soft:#FDF0DC; --warn:#9A5B06;
   --p1:#1D5DB8; --p2:#C2410C; --p3:#15803D; --p4:#7E3FB8;
+  --key-w:#FBFCFD; --key-w-on:#CFE0F8; --key-b:#1B222B; --key-b-on:#3E6FB8;
   --screen:#0B1118; --screen-2:#111A24; --screen-grid:#1D2935; --screen-ink:#8FA2B6; --screen-hi:#DCE6F0; --curve:#FFB23F; --marker:#FF5FA2;
   --font-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --font-body:"Archivo","Helvetica Neue",Arial,sans-serif;
@@ -28,6 +29,7 @@
     --accent:#6FA6FF; --accent-soft:#1D2D45; --accent-ink:#0A1422;
     --ok:#4CC97A; --ok-soft:#15301F; --bad:#FF8A7E; --bad-soft:#3A1B19; --mid:#F2B04A; --mid-soft:#3A2A10; --warn:#F2B04A;
     --p1:#6FA6FF; --p2:#FF9460; --p3:#4CC97A; --p4:#C79BFF;
+    --key-w:#E8EDF2; --key-w-on:#9DBDF0; --key-b:#0A0F14; --key-b-on:#3E6FB8;
     color-scheme:dark;
   }
 }
@@ -36,76 +38,78 @@
   --accent:#6FA6FF; --accent-soft:#1D2D45; --accent-ink:#0A1422;
   --ok:#4CC97A; --ok-soft:#15301F; --bad:#FF8A7E; --bad-soft:#3A1B19; --mid:#F2B04A; --mid-soft:#3A2A10; --warn:#F2B04A;
   --p1:#6FA6FF; --p2:#FF9460; --p3:#4CC97A; --p4:#C79BFF;
+  --key-w:#E8EDF2; --key-w-on:#9DBDF0; --key-b:#0A0F14; --key-b-on:#3E6FB8;
   color-scheme:dark;
 }
 [hidden]{display:none!important}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.4;margin:0}
-button{font:inherit;color:inherit}
-input{font:inherit}
+button,select,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 30px 7px 10px;min-width:0;cursor:pointer;
+  appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+select:hover{border-color:var(--muted)}
 
-.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;padding-inline:16px;padding-block:10px;max-width:2200px;margin:0 auto}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;padding-inline:16px;padding-block:10px;max-width:2000px;margin:0 auto}
 
-/* Cabeçalho */
-header.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
+/* Cabeçalho: marca | abas centralizadas | aviso */
+header.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px 20px}
 .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;min-width:0}
 .brand h1{font-family:var(--font-display);font-stretch:78%;font-weight:800;font-size:25px;line-height:1;margin:0;letter-spacing:-.01em}
 .brand span{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .modes{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px}
-.modes button{border:0;background:transparent;border-radius:6px;padding:6px 14px;font-weight:650;cursor:pointer;color:var(--muted)}
+.modes button{border:0;background:transparent;border-radius:6px;padding:6px 16px;font-weight:650;cursor:pointer;color:var(--muted);white-space:nowrap}
 .modes button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
-.safety{margin-left:auto;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.safety{justify-self:end;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center;text-align:right}
 .safety b{color:var(--warn)}
 
-/* Área de trabalho */
-.work{display:grid;grid-template-columns:230px minmax(0,1fr) 470px;gap:12px;min-height:0}
-@media (max-width:1500px){.work{grid-template-columns:210px minmax(0,1fr) 440px}}
+/* Área de trabalho: visores | controles */
+.work{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:12px;min-height:0}
+@media (max-width:1500px){.work{grid-template-columns:minmax(0,1fr) 440px}}
 .col{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
 .pad{padding:12px}
 .label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
 .hint{font-size:12px;color:var(--muted);margin:0}
 kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--panel)}
-
-/* Amostras */
-.samples{display:flex;flex-direction:column;gap:8px}
-.sample-list{display:flex;flex-direction:column;gap:4px}
-.sample{display:grid;grid-template-columns:26px minmax(0,1fr);gap:0 9px;align-items:center;text-align:left;background:var(--panel-2);border:1px solid transparent;border-radius:8px;padding:6px 8px;cursor:pointer}
-.sample:hover{border-color:var(--line)}
-.sample[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
-.sample .ico{grid-row:span 2;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line)}
-.sample .ico svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sample .nm{font-weight:650;font-size:13.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sample .ds{font-size:11.5px;color:var(--muted);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tone-ctl{display:flex;flex-direction:column;gap:6px;padding:9px;border:1px dashed var(--line);border-radius:8px}
-.tone-read{font-family:var(--font-mono);font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;font-variant-numeric:tabular-nums}
-.tone-read b{grid-column:1/-1;font-size:18px;font-weight:600}
 .seg{display:flex;flex-wrap:wrap;gap:4px}
-.seg button{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:4px 8px;font-size:12.5px;cursor:pointer}
+.seg button{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:4px 9px;font-size:12.5px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.big{padding:10px 16px;font-size:14.5px}
+.rowline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 
-/* Coluna central */
-.center{display:grid;grid-template-rows:auto minmax(0,1.25fr) minmax(0,1fr);gap:10px;min-height:0;min-width:0;position:relative}
-.transport{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 12px}
-.play{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;min-width:108px;justify-content:center}
+/* Coluna dos visores */
+.center{display:grid;grid-template-rows:auto minmax(0,1.25fr) minmax(0,1fr);gap:10px;min-height:0;min-width:0}
+
+/* Caixa de reprodução */
+/* Altura fixa: o topo do espectro fica na mesma posição em todas as abas */
+.transport{display:flex;flex-wrap:nowrap;align-items:center;gap:14px;padding:0 12px;height:58px}
+.tsrc{display:flex;align-items:center;gap:8px;flex:0 0 50%;min-width:0}
+.tsrc select{flex:1 1 0;width:0;font-weight:650;font-size:14.5px;padding-block:8px}
+.play{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;min-width:104px;justify-content:center;flex:none}
 .play svg{width:15px;height:15px;fill:currentColor}
-.now{display:flex;flex-direction:column;min-width:0;flex:1 1 160px}
-.now b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.now span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.eqswitch{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 5px;background:var(--panel-2);cursor:pointer;font-weight:600;font-size:13.5px}
-.eqswitch .knob{width:38px;height:21px;border-radius:999px;background:var(--line);position:relative;transition:background .15s}
+.tctl{display:flex;align-items:center;gap:14px;flex:1 1 auto;min-width:0;justify-content:flex-end}
+.eqswitch{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 5px;background:var(--panel-2);cursor:pointer;font-weight:600;font-size:13.5px;white-space:nowrap}
+.eqswitch .knob{width:38px;height:21px;border-radius:999px;background:var(--line);position:relative;transition:background .15s;flex:none}
 .eqswitch .knob::after{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;background:var(--panel);transition:transform .15s}
 .eqswitch[aria-pressed="true"] .knob{background:var(--ok)}
 .eqswitch[aria-pressed="true"] .knob::after{transform:translateX(17px)}
 .eqswitch .short{display:none}
-@media (max-height:820px) and (min-width:1181px){.eqswitch .short{display:inline}}
-.eqswitch:disabled{opacity:.5;cursor:default}
 .vol{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
 .vol input{width:100px;accent-color:var(--accent)}
+.tone-ctl{display:flex;flex-direction:column;gap:8px}
+.tone-read{font-family:var(--font-mono);font-size:12px;display:flex;gap:12px;align-items:baseline;font-variant-numeric:tabular-nums}
+.tone-read b{font-size:16px;font-weight:600;min-width:7ch;display:inline-block;text-align:right}
+.tone-read span{min-width:7ch;display:inline-block}
+.tone-ctl input{width:100%;accent-color:var(--accent)}
 
-.screen{background:var(--screen);border-radius:var(--r);border:1px solid #05080c;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+/* Visores */
+.screen{background:var(--screen);border-radius:var(--r);border:1px solid #05080c;overflow:hidden;display:flex;flex-direction:column;min-height:0;position:relative}
 .screen-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;padding:6px 10px;background:var(--screen-2);border-bottom:1px solid #05080c}
 .screen-head .t{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--screen-hi)}
 .legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-family:var(--font-mono);font-size:11px;color:var(--screen-ink);align-items:center}
@@ -118,33 +122,23 @@ kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);b
 #spec,#sgOver{cursor:crosshair;touch-action:none}
 .sg-axis{position:absolute;left:0;top:0;bottom:18px;width:48px;pointer-events:none}
 .sg-axis span{position:absolute;left:6px;transform:translateY(-50%);font-family:var(--font-mono);font-size:10.5px;color:var(--screen-hi);text-shadow:0 0 3px #000,0 0 3px #000}
-
-/* Leituras de posição fixa */
 .readout{display:flex;flex-wrap:wrap;gap:4px 22px;padding:6px 10px;font-family:var(--font-mono);font-size:12px;color:var(--screen-ink);border-top:1px solid #05080c;background:var(--screen-2);font-variant-numeric:tabular-nums}
 .rgrp{display:flex;align-items:baseline;gap:8px}
-.rgrp>em{font-style:normal;color:var(--screen-ink);min-width:0}
+.rgrp>em{font-style:normal;color:var(--screen-ink)}
 .rv{display:inline-block;color:var(--screen-hi);text-align:right;white-space:nowrap;overflow:hidden}
 .rv.w9{width:9ch}.rv.w7{width:7ch}.rv.w8{width:8ch}.rv.w10{width:10.5ch}.rv.w11{width:11.5ch}
-.rv small{color:var(--screen-ink);font-size:10.5px;margin-right:4px}
 .sgbtn{background:transparent;border:1px solid var(--screen-grid);color:var(--screen-hi);font-family:var(--font-mono);font-size:10.5px;border-radius:5px;padding:3px 8px;cursor:pointer}
 .sgbtn[aria-pressed="true"]{background:var(--marker);border-color:var(--marker);color:#1b0710}
+.cover{display:none;position:absolute;inset:0;background:var(--screen);place-items:center;text-align:center;z-index:3;padding:16px;color:var(--screen-hi)}
+.hidegfx .cover{display:grid}
+.cover b{font-family:var(--font-display);font-stretch:80%;font-size:24px;display:block;margin-bottom:4px}
+.cover span{color:var(--screen-ink);max-width:42ch;display:block}
 
-.cover{position:absolute;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--screen) 95%,transparent);display:grid;place-items:center;text-align:center;border-radius:var(--r);z-index:3;padding:20px;color:var(--screen-hi)}
-.cover b{font-family:var(--font-display);font-stretch:80%;font-size:26px;display:block;margin-bottom:6px}
-.cover span{color:var(--screen-ink);max-width:40ch;display:block}
-
-/* Controles */
-.ctl h2{font-size:13.5px;margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.ctl h2 small{font-weight:400;color:var(--muted);font-size:11.5px}
-.chips{display:flex;flex-wrap:wrap;gap:4px}
-.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:12.5px;cursor:pointer}
-.chip:hover{border-color:var(--muted)}
-.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:650}
-.chip.did{border-style:dashed}
-.chip.did[aria-pressed="true"]{border-style:solid}
-.pgrp{display:flex;flex-direction:column;gap:5px}
-.pgrp+.pgrp{margin-top:8px}
-.pdesc{font-size:12.5px;color:var(--muted);margin:8px 0 0;min-height:2.6em}
+/* Equalizador */
+.eqhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.eqhead h2{font-size:14px;margin:0}
+.eqhead select{max-width:230px;font-weight:600}
+.pdesc{font-size:12.5px;color:var(--muted);margin:8px 0 10px;min-height:2.7em}
 .pdesc b{color:var(--ink)}
 .bands{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:2px}
 .band{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
@@ -163,35 +157,27 @@ kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);b
 .fl label span{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
 .fl input{width:100%;accent-color:var(--accent)}
 .fl small{font-size:11px;color:var(--muted);line-height:1.25}
-.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:13px}
-.btn:hover{border-color:var(--muted)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.big{padding:10px 16px;font-size:14.5px}
-.btn:disabled{opacity:.5;cursor:default}
-.rowline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 
-/* Jogo */
-.pl-list{display:flex;flex-direction:column;gap:6px}
-.pl{border:1px solid var(--line);border-radius:9px;padding:8px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;background:var(--panel)}
-.pl.cur{border-color:var(--pc);box-shadow:inset 4px 0 0 var(--pc)}
-.pl .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--pc)}
-.pl .tot{grid-row:span 2;font-family:var(--font-mono);font-size:26px;font-weight:600;line-height:1;align-self:center;font-variant-numeric:tabular-nums}
-.pl .lv{font-family:var(--font-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
-.pl .marks{grid-column:1/-1;display:flex;gap:3px;margin-top:4px}
-.pl .marks i{width:14px;height:8px;border-radius:2px;background:var(--panel-2);border:1px solid var(--line)}
-.pl .marks i.m3{background:var(--ok);border-color:var(--ok)}
-.pl .marks i.m1{background:var(--mid);border-color:var(--mid)}
-.pl .marks i.m0{background:var(--bad-soft);border-color:var(--bad)}
-.pl .marks i.gap{margin-left:5px}
+/* SpectroGame */
+.game{display:flex;flex-direction:column;gap:12px}
+.ghead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ghead h2{margin:0;font-family:var(--font-display);font-stretch:80%;font-size:22px;font-weight:800;letter-spacing:-.01em}
+.gsec{display:flex;flex-direction:column;gap:10px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field select{width:100%}
+.names{display:flex;flex-direction:column;gap:6px}
+.names input{border:1px solid var(--line);border-radius:7px;padding:7px 10px;background:var(--panel);color:var(--ink);width:100%}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px}
+.check input{margin-top:3px;accent-color:var(--accent)}
 .g-status{display:flex;flex-direction:column;gap:2px}
 .g-status .lvl{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.g-status .who{font-family:var(--font-display);font-stretch:82%;font-size:28px;font-weight:800;line-height:1.05}
+.g-status .who{font-family:var(--font-display);font-stretch:82%;font-size:26px;font-weight:800;line-height:1.05}
 .progress{height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden;border:1px solid var(--line)}
 .progress i{display:block;height:100%;background:var(--accent)}
 .ab{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .ab button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:10px 8px;font-weight:650;cursor:pointer}
 .ab button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.answers{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:5px}
+.answers{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:5px}
 .ans{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
 .ans b{font-family:var(--font-mono);font-size:15px}
 .ans span{font-size:10.5px;color:var(--muted)}
@@ -204,18 +190,53 @@ kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);b
 .fb.near{background:var(--mid-soft);border:1px solid var(--mid)}
 .fb.wrong{background:var(--bad-soft);border:1px solid var(--bad)}
 .fb.info{background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+.score{background:var(--panel-2);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.pl-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
+.pl{border:1px solid var(--line);border-radius:9px;padding:7px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;background:var(--panel)}
+.pl.cur{border-color:var(--pc);box-shadow:inset 4px 0 0 var(--pc)}
+.pl .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--pc)}
+.pl .tot{grid-row:span 2;font-family:var(--font-mono);font-size:24px;font-weight:600;line-height:1;align-self:center;font-variant-numeric:tabular-nums}
+.pl .lv{font-family:var(--font-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pl .marks{grid-column:1/-1;display:flex;gap:3px;margin-top:3px}
+.pl .marks i{width:13px;height:8px;border-radius:2px;background:var(--panel-2);border:1px solid var(--line)}
+.pl .marks i.m3{background:var(--ok);border-color:var(--ok)}
+.pl .marks i.m1{background:var(--mid);border-color:var(--mid)}
+.pl .marks i.m0{background:var(--bad-soft);border-color:var(--bad)}
+.pl .marks i.gap{margin-left:5px}
+.about{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.about p{margin:0;font-size:13px;color:var(--muted)}
 .rules{font-size:12.5px;color:var(--muted);margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
 .rules b{color:var(--ink)}
-.names{display:flex;flex-direction:column;gap:6px}
-.names input{border:1px solid var(--line);border-radius:7px;padding:7px 10px;background:var(--panel);color:var(--ink);width:100%}
-.check{display:flex;gap:8px;align-items:flex-start;font-size:13px}
-.check input{margin-top:3px;accent-color:var(--accent)}
 table.res{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
 table.res th,table.res td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:center}
 table.res th{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
 table.res td:first-child,table.res th:first-child{text-align:left}
 table.res td.t{font-weight:700;font-family:var(--font-mono)}
-.winner{font-family:var(--font-display);font-stretch:82%;font-size:26px;font-weight:800;margin:0;line-height:1.1}
+.winner{font-family:var(--font-display);font-stretch:82%;font-size:24px;font-weight:800;margin:0;line-height:1.1}
+
+/* Teclado */
+.kb{display:flex;flex-direction:column;gap:10px}
+.kbctl{display:grid;grid-template-columns:1.4fr auto 1fr;gap:8px 10px;align-items:end}
+.kbctl .field select{width:100%}
+.oct{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.oct button{border:0;background:var(--panel-2);width:32px;height:34px;cursor:pointer;font-size:17px;font-weight:700}
+.oct button:hover{background:var(--accent-soft)}
+.oct span{font-family:var(--font-mono);font-weight:600;min-width:34px;text-align:center}
+.keys{position:relative;height:var(--kbh,150px);user-select:none;-webkit-user-select:none;touch-action:none}
+.key{position:absolute;top:0;border:1px solid var(--line);border-radius:0 0 7px 7px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:1px;padding-bottom:7px;font-family:var(--font-mono)}
+.key.w{background:var(--key-w);color:#2A3440;height:100%;z-index:1;border-color:#B7C1CC}
+.key.b{background:var(--key-b);color:#C9D3DD;height:60%;z-index:2;border-color:#000;padding-bottom:5px}
+.key.w.on{background:var(--key-w-on)}
+.key.b.on{background:var(--key-b-on)}
+.key .n{font-size:11.5px;font-weight:600}
+.key kbd{font-size:10px;line-height:1.3;padding:0 4px;min-width:16px;text-align:center;background:var(--panel);color:var(--ink);border-color:#B7C1CC}
+.key.b kbd{background:#2C3642;color:#DCE6F0;border-color:#4A5663}
+.key.b .n{font-size:9.5px}
+.kbread{display:flex;flex-wrap:wrap;gap:4px 16px;font-family:var(--font-mono);font-size:12.5px;font-variant-numeric:tabular-nums;background:var(--panel-2);border-radius:8px;padding:7px 10px}
+.kbread b{font-weight:600;min-width:5ch;display:inline-block}
+.kbread span{min-width:9ch;display:inline-block}
+.idesc{font-size:12.5px;color:var(--muted);margin:0}
+.idesc b{color:var(--ink)}
 
 /* Conceitos */
 .cc-page{overflow:auto;min-height:0}
@@ -230,16 +251,12 @@ table.ref td,table.ref th{border-bottom:1px solid var(--line);padding:6px 8px;te
 table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
 .tbl{overflow-x:auto}
 
-/* Telas menores ou baixas: empilha e permite rolar a página */
-@media (max-width:1180px), (max-height:620px){
-  html,body{height:auto}
-  .app{height:auto}
-  .work{grid-template-columns:minmax(0,1fr)}
-  .col{overflow:visible}
-  .center{grid-template-rows:auto 330px 230px;order:-1}
-  .sample-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
-}
-@media (max-width:560px){ .filters{grid-template-columns:1fr} .safety{margin-left:0} .vs{width:26px} .vs-thumb{width:22px} .band .rg{display:none} }
+/* Visibilidade por aba */
+body.m-game #eqBox, body.m-game #filtersBox, body.m-kb #filtersBox{display:none}
+body:not(.m-game) #gamePanel, body:not(.m-kb) #kbPanel{display:none}
+body.m-game #toneCtl, body.m-kb #toneCtl{display:none}
+body.m-game #eqSwitch, body.m-kb .tsrc{visibility:hidden}
+body.m-game #sampleSel{display:none}
 
 /* Telas baixas (ex.: 1366×768): versão compacta, ainda sem rolar */
 @media (max-height:820px) and (min-width:1181px){
@@ -249,21 +266,57 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
   .work{gap:10px}
   .col{gap:8px}
   .pad{padding:9px 10px}
-  .sample{padding:4px 7px}
-  .sample .ds{display:none}
-  .sample .ico{grid-row:auto;width:22px;height:22px}
-  .transport{padding:6px 10px;gap:6px 10px}
-  .play{padding:7px 12px;min-width:96px}
-  .now span{display:none}
+  .transport{height:48px;padding:0 10px;gap:10px}
+  .play{padding:7px 12px;min-width:92px}
+  .tsrc select{padding-block:6px}
   .eqswitch .long{display:none}
+  .eqswitch .short{display:inline}
   .vol input{width:80px}
   .screen-head{padding:4px 10px}
   .sg-head .legend{display:none}
-  .chip{padding:3px 9px;font-size:12px}
-  .pdesc{min-height:0;margin-top:6px;font-size:12px}
+  .pdesc{min-height:0;margin:6px 0 8px;font-size:12px}
   .fl small{display:none}
   .band .rg{display:none}
   .readout{padding:4px 10px}
+  .keys{--kbh:120px}
+  .game{gap:9px}
+  .about p{display:none}
+}
+
+/* Telas estreitas (celular, tablet em pé): tudo empilhado, página rola */
+@media (max-width:1180px), (max-height:620px){
+  html,body{height:auto}
+  .app{height:auto}
+  .work{display:flex;flex-direction:column;gap:10px}
+  .center,.col{display:contents}
+  .transport{order:10} #specScreen{order:20;height:360px} #sgScreen{order:30;height:300px}
+  #eqBox{order:40} #filtersBox{order:50}
+  #gamePanel,#kbPanel{order:5}
+  body.m-game .transport{display:none}
+}
+@media (max-width:760px){
+  header.top{grid-template-columns:minmax(0,1fr)}
+  .brand{justify-content:space-between}
+  .modes{width:100%}
+  .modes button{flex:1 1 0;padding:7px 2px;font-size:12.5px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .safety{justify-self:start;text-align:left}
+  .transport{flex-direction:column;align-items:stretch;height:auto;padding:8px 12px;gap:8px}
+  .tsrc,.tctl{flex:none;min-width:0;width:100%}
+  body.m-kb .tsrc{display:none}
+  .eqswitch{flex:none}
+  .play{min-width:0;width:46px;height:40px;padding:0}
+  .play .ptxt{display:none}
+  .tctl{justify-content:space-between;gap:10px}
+  body.m-game .tsrc{display:none}
+  .vol{flex:1 1 auto;justify-content:flex-end}
+  .vol input{flex:1 1 0;width:0;min-width:60px;max-width:180px}
+  .filters{grid-template-columns:1fr}
+  .vs{width:26px} .vs-thumb{width:22px}
+  .band .rg{display:none}
+  .eqhead select{max-width:none;flex:1 1 180px}
+  .kbctl{grid-template-columns:1fr 1fr}
+  .kbctl .field:first-child{grid-column:1/-1}
+  .readout{gap:4px 14px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -273,50 +326,31 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
 
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Laboratório de Equalização</h1><span>Física · Acústica</span></div>
-    <div class="modes" role="tablist" aria-label="Modo">
-      <button role="tab" aria-selected="true" data-mode="lab">Laboratório</button>
-      <button role="tab" aria-selected="false" data-mode="game">Jogo em grupo</button>
+    <div class="brand"><h1>Laboratório de Equalização</h1></div>
+    <div class="modes" role="tablist" aria-label="Abas">
+      <button role="tab" aria-selected="true" data-mode="lab">Equalizador</button>
+      <button role="tab" aria-selected="false" data-mode="kb">Teclado</button>
+      <button role="tab" aria-selected="false" data-mode="game">SpectroGame</button>
       <button role="tab" aria-selected="false" data-mode="cc">Conceitos</button>
     </div>
     <div class="safety"><b>Atenção</b> Use fones ou volume moderado.</div>
   </header>
 
   <div class="work" id="work">
-    <!-- Coluna esquerda -->
-    <div class="col">
-      <aside class="panel pad samples" id="samplesPanel" aria-label="Amostras de som">
-        <p class="label">Amostra de som</p>
-        <div class="sample-list" id="sampleList"></div>
-        <div class="tone-ctl" id="toneCtl" hidden>
-          <div class="tone-read"><b id="toneHz">440 Hz</b><span id="toneNote">≈ Lá4</span><span id="toneLambda">λ ≈ 78 cm</span></div>
-          <input id="toneFreq" type="range" min="0" max="1000" value="600" aria-label="Frequência do tom">
-          <div class="seg" id="toneWave" aria-label="Forma de onda">
-            <button data-w="sine" aria-pressed="true">Senoidal</button>
-            <button data-w="triangle" aria-pressed="false">Triangular</button>
-            <button data-w="square" aria-pressed="false">Quadrada</button>
-            <button data-w="sawtooth" aria-pressed="false">Dente de serra</button>
-          </div>
-        </div>
-        <p class="hint">Sons gerados por síntese na própria página, sem gravações nem direitos autorais.</p>
-      </aside>
-      <aside class="panel pad" id="scorePanel" hidden aria-label="Placar">
-        <div class="rowline"><p class="label">Placar</p><span class="hint" id="scoreMax"></span></div>
-        <div class="pl-list" id="plList" style="margin-top:8px"></div>
-        <p class="hint" style="margin-top:8px">Cada quadrado é uma jogada: <span style="color:var(--ok)">■</span> acerto (3), <span style="color:var(--mid)">■</span> vizinha (1), <span style="color:var(--bad)">■</span> errou (0).</p>
-      </aside>
-    </div>
-
-    <!-- Coluna central -->
+    <!-- Visores -->
     <div class="center" id="center">
-      <div class="panel transport">
-        <button class="play" id="playBtn" aria-label="Tocar"><svg viewBox="0 0 16 16" id="playIco"><path d="M4 2.5v11l9-5.5z"/></svg><span id="playTxt">Tocar</span></button>
-        <div class="now"><b id="nowName">Música completa</b><span id="nowHint">Compare os presets comerciais</span></div>
-        <button class="eqswitch" id="eqSwitch" aria-pressed="true"><span class="knob"></span><span id="eqTxt"><span class="long">Equalizador</span><span class="short">EQ</span> ligado</span></button>
-        <label class="vol" for="vol">Volume <input id="vol" type="range" min="0" max="100" value="60"></label>
+      <div class="panel transport" id="transport">
+        <div class="tsrc">
+          <select id="sampleSel" aria-label="Amostra de som"></select>
+          <button class="play" id="playBtn" aria-label="Tocar"><svg viewBox="0 0 16 16" id="playIco"><path d="M4 2.5v11l9-5.5z"/></svg><span class="ptxt" id="playTxt">Tocar</span></button>
+        </div>
+        <div class="tctl">
+          <button class="eqswitch" id="eqSwitch" aria-pressed="true"><span class="knob"></span><span id="eqTxt"></span></button>
+          <label class="vol" for="vol">Volume <input id="vol" type="range" min="0" max="100" value="60"></label>
+        </div>
       </div>
 
-      <div class="screen">
+      <div class="screen" id="specScreen">
         <div class="screen-head">
           <span class="t">Espectro · amplitude por frequência</span>
           <div class="legend">
@@ -334,9 +368,10 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
           <span class="rgrp"><em>Pico</em><span class="rv w9" id="rPeakF">—</span><span class="rv w7" id="rPeakN">—</span><span class="rv w11" id="rPeakL">—</span></span>
           <span class="rgrp"><em>Cursor</em><span class="rv w9" id="rCurF">—</span><span class="rv w10" id="rCurD">—</span><span class="rv w11" id="rCurE">—</span></span>
         </div>
+        <div class="cover"><div><b>Gráficos ocultos</b><span>Use só os ouvidos. Os gráficos voltam quando a resposta for dada.</span></div></div>
       </div>
 
-      <div class="screen">
+      <div class="screen" id="sgScreen">
         <div class="screen-head sg-head">
           <span class="t">Espectrograma · frequência ao longo do tempo</span>
           <div class="legend"><span><i style="background:linear-gradient(90deg,#0b1118,#2b3a8c,#1fa0a8,#f2e35a,#ffffff)"></i>fraco → forte</span><span>clique marca um instante</span></div>
@@ -349,22 +384,46 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
           <span class="rgrp"><em>Tempo</em><span class="rv w8" id="sT">—</span></span>
           <span class="rgrp"><em>Δt da marca</em><span class="rv w8" id="sM">—</span></span>
         </div>
+        <div class="cover"><div><b>Gráficos ocultos</b><span>Compare o original com o alterado e escolha a faixa.</span></div></div>
       </div>
-      <div class="cover" id="cover" hidden><div><b>Gráficos ocultos</b><span>Use só os ouvidos. Os gráficos voltam quando a resposta for dada.</span></div></div>
     </div>
 
-    <!-- Coluna direita -->
+    <!-- Controles -->
     <div class="col" id="rightCol">
-      <section class="panel pad ctl" id="labCtl" aria-label="Equalizador">
-        <div class="pgrp"><p class="label">Presets comerciais</p><div class="chips" id="chipsCom"></div></div>
-        <div class="pgrp"><p class="label">Presets didáticos · filtros e situações do dia a dia</p><div class="chips" id="chipsDid"></div></div>
-        <p class="pdesc" id="pdesc"></p>
+      <!-- Teclado -->
+      <section class="panel pad kb" id="kbPanel" aria-label="Teclado">
+        <div class="kbctl">
+          <div class="field"><label class="label" for="instSel">Instrumento</label><select id="instSel"></select></div>
+          <div class="field"><span class="label">Oitava</span><div class="oct"><button id="octDown" aria-label="Oitava abaixo">−</button><span id="octVal">4</span><button id="octUp" aria-label="Oitava acima">+</button></div></div>
+          <div class="field"><label class="label" for="susSel">Sustentação</label><select id="susSel">
+            <option value="0.3">Curta (0,3 s)</option><option value="1" selected>Média (1 s)</option><option value="3">Longa (3 s)</option><option value="hold">Enquanto pressionar</option>
+          </select></div>
+        </div>
+        <div class="keys" id="keys"></div>
+        <div class="kbread" aria-live="polite"><span>Nota: <b id="kNote">—</b></span><span>f = <b id="kFreq">—</b></span><span>λ = <b id="kLam">—</b></span></div>
+        <p class="idesc" id="instDesc"></p>
+        <p class="hint">Toque nas teclas ou use o teclado do computador: <kbd>A</kbd> a <kbd>J</kbd> (brancas), <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> (pretas), <kbd>Z</kbd>/<kbd>X</kbd> mudam a oitava.</p>
       </section>
-      <section class="panel pad ctl" id="labBands">
-        <h2>Equalizador gráfico <small>arraste · duplo clique zera</small></h2>
+
+      <!-- Tom ajustável -->
+      <section class="panel pad tone-ctl" id="toneCtl" hidden aria-label="Tom ajustável">
+        <div class="eqhead"><h2>Tom ajustável</h2><div class="tone-read"><b id="toneHz">440 Hz</b><span id="toneNote">≈ Lá4</span><span id="toneLambda">λ ≈ 78 cm</span></div></div>
+        <input id="toneFreq" type="range" min="0" max="1000" value="600" aria-label="Frequência do tom">
+        <div class="seg" id="toneWave" aria-label="Forma de onda">
+          <button data-w="sine" aria-pressed="true">Senoidal</button>
+          <button data-w="triangle" aria-pressed="false">Triangular</button>
+          <button data-w="square" aria-pressed="false">Quadrada</button>
+          <button data-w="sawtooth" aria-pressed="false">Dente de serra</button>
+        </div>
+      </section>
+
+      <!-- Equalizador -->
+      <section class="panel pad" id="eqBox" aria-label="Equalizador">
+        <div class="eqhead"><h2>Equalizador gráfico</h2><select id="presetSel" aria-label="Preset de equalização"></select></div>
+        <p class="pdesc" id="pdesc"></p>
         <div class="bands" id="bands"></div>
       </section>
-      <section class="panel pad ctl" id="labFilters">
+      <section class="panel pad" id="filtersBox">
         <div class="filters">
           <div class="fl">
             <label for="hp">Passa-altas <span id="hpVal">desligado</span></label>
@@ -379,42 +438,51 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
         </div>
         <div class="rowline" style="margin-top:10px">
           <button class="btn" id="resetBtn">Zerar tudo (Neutro)</button>
-          <span class="hint"><kbd>Espaço</kbd> toca/pausa · <kbd>E</kbd> liga/desliga o EQ</span>
+          <span class="hint">Barras: arraste · duplo clique zera · <kbd>E</kbd> liga/desliga o EQ</span>
         </div>
       </section>
 
-      <!-- Jogo: configuração -->
-      <section class="panel pad" id="gSetup" hidden style="display:flex;flex-direction:column;gap:12px">
-        <div><p class="label">Jogo em grupo</p><p style="margin:4px 0 0;font-size:13.5px">Uma faixa secreta é alterada. Cada jogador ouve, compara com o original e tenta descobrir qual foi.</p></div>
-        <ol class="rules">
-          <li>São 3 níveis: <b>Fácil</b> (+12 dB, 5 faixas), <b>Médio</b> (+9 dB, 8 faixas) e <b>Difícil</b> (corte de 12 dB, 8 faixas).</li>
-          <li>Em cada nível, cada jogador faz <b>3 jogadas seguidas</b> e depois passa o fone ao próximo.</li>
-          <li><b>3 pontos</b> para a faixa certa, <b>1 ponto</b> para a faixa vizinha (o botão ao lado), 0 para as demais.</li>
-        </ol>
-        <div class="rowline"><p class="label">Número de jogadores</p><div class="seg" id="gCount"><button data-n="1" aria-pressed="false">1</button><button data-n="2" aria-pressed="true">2</button><button data-n="3" aria-pressed="false">3</button><button data-n="4" aria-pressed="false">4</button></div></div>
-        <div class="names" id="gNames"></div>
-        <div><p class="label" style="margin-bottom:5px">Som do jogo</p><div class="seg" id="gSample"><button data-s="rosa" aria-pressed="true">Ruído rosa (recomendado)</button><button data-s="musica" aria-pressed="false">Música completa</button><button data-s="bateria" aria-pressed="false">Bateria</button></div></div>
-        <label class="check"><input type="checkbox" id="gHide" checked> Esconder os gráficos até cada resposta</label>
-        <button class="btn primary big" id="gStart">Começar o jogo</button>
-      </section>
+      <!-- SpectroGame -->
+      <section class="panel pad game" id="gamePanel" aria-label="SpectroGame">
+        <div class="ghead"><h2>SpectroGame</h2><span class="label" id="gPhaseLbl">Preparação</span></div>
 
-      <!-- Jogo: rodada -->
-      <section class="panel pad" id="gPlay" hidden style="display:flex;flex-direction:column;gap:12px">
-        <div class="g-status"><span class="lvl" id="gLvl">Nível Fácil · rodada 1 de 3</span><span class="who" id="gWho">Vez de Jogador 1</span></div>
-        <div class="progress"><i id="gProg" style="width:0%"></i></div>
-        <div><p class="label" style="margin-bottom:5px">Compare</p><div class="ab" id="gAB"><button data-ab="a" aria-pressed="false">Ouvir original</button><button data-ab="b" aria-pressed="true">Ouvir alterado</button></div></div>
-        <div><p class="label" style="margin-bottom:5px">Qual faixa foi alterada?</p><div class="answers" id="gAnswers"></div></div>
-        <p class="fb info" id="gFb">Alterne entre original e alterado quantas vezes quiser antes de responder.</p>
-        <div class="rowline"><button class="btn primary big" id="gNext" hidden>Próxima jogada</button><button class="btn" id="gQuit">Encerrar jogo</button></div>
-      </section>
+        <div class="gsec" id="gSetup">
+          <div class="rowline"><span class="label">Número de jogadores</span><div class="seg" id="gCount"><button data-n="1" aria-pressed="false">1</button><button data-n="2" aria-pressed="true">2</button><button data-n="3" aria-pressed="false">3</button><button data-n="4" aria-pressed="false">4</button></div></div>
+          <div class="names" id="gNames"></div>
+          <div class="field"><label class="label" for="gSampleSel">Som do jogo</label><select id="gSampleSel"></select></div>
+          <label class="check"><input type="checkbox" id="gHide" checked> Esconder os gráficos até cada resposta</label>
+          <button class="btn primary big" id="gStart">Começar o jogo</button>
+        </div>
 
-      <!-- Jogo: fim -->
-      <section class="panel pad" id="gEnd" hidden style="display:flex;flex-direction:column;gap:12px">
-        <p class="label">Fim de jogo</p>
-        <p class="winner" id="gWinner"></p>
-        <p class="hint">Transcreva esta tabela para o roteiro da atividade. Máximo: 9 pontos por nível, 27 no total.</p>
-        <div class="tbl"><table class="res" id="gRes"></table></div>
-        <div class="rowline"><button class="btn primary" id="gAgain">Jogar de novo</button><button class="btn" id="gNew">Novo jogo</button></div>
+        <div class="gsec" id="gPlay" hidden>
+          <div class="g-status"><span class="lvl" id="gLvl"></span><span class="who" id="gWho"></span></div>
+          <div class="progress"><i id="gProg" style="width:0%"></i></div>
+          <div class="score" id="gScore">
+            <div class="rowline"><span class="label">Placar</span><span class="hint"><span style="color:var(--ok)">■</span> acerto 3 · <span style="color:var(--mid)">■</span> vizinha 1 · <span style="color:var(--bad)">■</span> errou 0 · máx. 27</span></div>
+            <div class="pl-list" id="plList"></div>
+          </div>
+
+          <div class="field"><span class="label">Compare</span><div class="ab" id="gAB"><button data-ab="a" aria-pressed="false">Ouvir original</button><button data-ab="b" aria-pressed="true">Ouvir alterado</button></div></div>
+          <div class="field"><span class="label">Qual faixa foi alterada?</span><div class="answers" id="gAnswers"></div></div>
+          <p class="fb info" id="gFb"></p>
+          <div class="rowline"><button class="btn primary big" id="gNext" hidden>Próxima jogada</button><button class="btn" id="gQuit">Encerrar jogo</button></div>
+        </div>
+
+        <div class="gsec" id="gEnd" hidden>
+          <p class="winner" id="gWinner"></p>
+          <p class="hint">Transcreva esta tabela para o roteiro da atividade. Máximo: 9 pontos por nível, 27 no total.</p>
+          <div class="tbl"><table class="res" id="gRes"></table></div>
+          <div class="rowline"><button class="btn primary" id="gAgain">Jogar de novo</button><button class="btn" id="gNew">Novo jogo</button></div>
+        </div>
+
+        <div class="about">
+          <p>Uma faixa secreta do som é alterada. Cada jogador ouve, compara com o original e tenta descobrir qual faixa foi mexida.</p>
+          <ol class="rules">
+            <li>São 3 níveis: <b>Fácil</b> (+12 dB, 5 faixas), <b>Médio</b> (+9 dB, 8 faixas) e <b>Difícil</b> (corte de 12 dB, 8 faixas).</li>
+            <li>Em cada nível, cada jogador faz <b>3 jogadas seguidas</b> e depois passa o fone ao próximo.</li>
+            <li><b>3 pontos</b> para a faixa certa, <b>1 ponto</b> para a faixa vizinha, 0 para as demais.</li>
+          </ol>
+        </div>
       </section>
     </div>
   </div>
@@ -424,7 +492,8 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
       <div class="concepts">
         <div class="concept"><h3>Frequência e altura</h3><p>Frequência é o número de oscilações por segundo, medida em hertz (Hz). Quanto maior a frequência, mais agudo o som. O ouvido humano jovem percebe de cerca de 20 Hz a 20 000 Hz.</p><span class="f">v = λ · f &nbsp;→&nbsp; λ = 343 / f</span></div>
         <div class="concept"><h3>Amplitude e intensidade</h3><p>A amplitude da onda se relaciona com a intensidade do som. O nível sonoro é medido em decibéis, uma escala logarítmica: +10 dB significam 10 vezes mais intensidade; +6 dB, cerca do dobro da amplitude.</p><span class="f">β = 10 · log(I / I₀)</span></div>
-        <div class="concept"><h3>Timbre e harmônicos</h3><p>Um som musical é a soma de uma frequência fundamental com harmônicos (múltiplos inteiros dela). A proporção entre os harmônicos define o timbre: é por isso que violão e flauta tocando a mesma nota soam diferentes.</p><span class="f">fₙ = n · f₁</span></div>
+        <div class="concept"><h3>Timbre e harmônicos</h3><p>Um som musical é a soma de uma frequência fundamental com harmônicos (múltiplos inteiros dela). A proporção entre os harmônicos define o timbre: é por isso que violão e flauta tocando a mesma nota soam diferentes. Experimente na aba Teclado.</p><span class="f">fₙ = n · f₁</span></div>
+        <div class="concept"><h3>Notas e oitavas</h3><p>Cada oitava dobra a frequência. Entre duas teclas vizinhas do teclado (um semitom), a frequência é multiplicada pela raiz duodécima de 2, cerca de 1,0595. Doze semitons formam uma oitava.</p><span class="f">f = 440 · 2^(n/12)</span></div>
         <div class="concept"><h3>Espectro</h3><p>O espectro mostra quanta energia existe em cada frequência num instante. O eixo horizontal é logarítmico: cada divisão dobra a frequência (uma oitava).</p></div>
         <div class="concept"><h3>Espectrograma</h3><p>É o espectro desenhado ao longo do tempo. O eixo vertical é a frequência, o horizontal é o tempo e a cor indica a intensidade. Batidas aparecem como riscos verticais; notas longas, como linhas horizontais. Clique para marcar um instante e meça o intervalo até outro ponto.</p></div>
         <div class="concept"><h3>Equalizador e filtros</h3><p>O equalizador reforça (+dB) ou atenua (−dB) faixas específicas de frequência. Filtros passa-altas e passa-baixas cortam tudo abaixo ou acima de um limite. Nenhum deles cria frequências novas: só mudam a amplitude das que já existem.</p></div>
@@ -461,12 +530,12 @@ const BAND_INFO = [
 ];
 const REGIONS = [
   { n: 'Sub-graves', a: 20, b: 60, t: 'Vibração sentida no corpo; ronco de trovão, órgão de tubos.' },
-  { n: 'Graves', a: 60, b: 250, t: 'Bumbo, contrabaixo, voz masculina grave.' },
+  { n: 'Graves', a: 60, b: 250, t: 'Bumbo, zabumba, contrabaixo, voz masculina grave.' },
   { n: 'Médio-graves', a: 250, b: 500, t: 'Calor e corpo; excesso deixa o som abafado.' },
   { n: 'Médios', a: 500, b: 2000, t: 'Maior parte das notas musicais e das vogais.' },
   { n: 'Médio-agudos', a: 2000, b: 4000, t: 'Ataque, clareza; região de maior sensibilidade do ouvido.' },
   { n: 'Presença', a: 4000, b: 6000, t: 'Consoantes, definição da voz.' },
-  { n: 'Brilho', a: 6000, b: 20000, t: 'Chimbal, pratos, "s" e "ch"; sensação de espaço.' }
+  { n: 'Brilho', a: 6000, b: 20000, t: 'Chimbal, triângulo, pratos, "s" e "ch"; sensação de espaço.' }
 ];
 const PRESETS = [
   { id: 'neutro', n: 'Neutro', g: 'com', b: [0,0,0,0,0,0,0,0,0,0], d: 'Todas as faixas em 0 dB: o som sai exatamente como foi gerado.' },
@@ -486,34 +555,25 @@ const PRESETS = [
   { id: 'sograves', n: 'Só graves', g: 'did', b: [0,0,0,0,0,0,0,0,0,0], lp: 250, d: 'Passa-baixas em 250 Hz: tudo acima disso é cortado.' },
   { id: 'semgraves', n: 'Sem graves', g: 'did', b: [0,0,0,0,0,0,0,0,0,0], hp: 300, d: 'Passa-altas em 300 Hz: tudo abaixo disso é cortado. É o som de caixinhas de celular.' },
   { id: 'somedios', n: 'Só médios', g: 'did', b: [0,0,0,0,0,0,0,0,0,0], hp: 500, lp: 2000, d: 'Passa-altas em 500 Hz e passa-baixas em 2 kHz: sobra só a faixa central.' },
+  { id: 'soagudos', n: 'Só agudos', g: 'did', b: [0,0,0,0,0,0,0,0,0,0], hp: 4000, d: 'Passa-altas em 4 kHz: sobram só o brilho e a presença.' },
   { id: 'semmedios', n: 'Sem médios', g: 'did', b: [0,0,0,-6,-12,-12,-12,-6,0,0], d: 'Corte profundo de 250 Hz a 4 kHz. O som parece "oco" e distante.' },
   { id: 'telefone', n: 'Telefone', g: 'did', b: [0,0,0,0,0,3,3,0,0,0], hp: 300, lp: 3400, d: 'De 300 Hz a 3,4 kHz, a faixa da telefonia tradicional. A voz continua compreensível mesmo sem a fundamental.' },
   { id: 'am', n: 'Rádio AM', g: 'did', b: [0,0,0,2,2,1,0,0,0,0], hp: 120, lp: 4500, d: 'Faixa de cerca de 120 Hz a 4,5 kHz, limitada pela largura de canal das rádios AM.' },
   { id: 'vizinho', n: 'Som do vizinho', g: 'did', b: [3,3,2,0,0,0,0,0,0,0], lp: 400, d: 'Paredes atenuam mais os agudos do que os graves. Do outro lado da parede, sobra o "tum-tum" do bumbo.' }
 ];
-const ICONS = {
-  music: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
-  drum: '<ellipse cx="12" cy="8" rx="8" ry="3"/><path d="M4 8v8c0 1.7 3.6 3 8 3s8-1.3 8-3V8"/><path d="M9 2l2 5M15 2l-2 5"/>',
-  bass: '<path d="M3 17l5-5 4 4 9-9"/><path d="M3 12h4M3 7h2"/>',
-  voice: '<path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
-  harm: '<path d="M4 20V4M8 20V9M12 20v-6M16 20v-3M20 20v-2"/>',
-  tones: '<path d="M3 12c1.5-4 3-4 4.5 0s3 4 4.5 0 3-4 4.5 0 3 4 4.5 0"/>',
-  pink: '<path d="M3 14l2-4 2 6 2-9 2 7 2-5 2 8 2-6 2 3 2-2"/>',
-  white: '<path d="M3 12l1-6 1 12 1-9 1 7 1-10 1 11 1-8 1 9 1-12 1 10 1-7 1 8 1-9 1 6 1-4 1 3"/>',
-  sweep: '<path d="M2 12c2-6 3-6 4 0s2 5 3 0 1.5-4 2 0 1-3 1.5 0 .8-2 1 0 .6-1.5.8 0 .5-1 .6 0 .4-.8.5 0"/>',
-  tone: '<circle cx="12" cy="12" r="8"/><path d="M8 12c1-3 2-3 4 0s3 3 4 0"/>'
-};
 const SAMPLES = [
-  { id: 'musica', n: 'Música completa', ico: 'music', d: 'Bateria, baixo, acordes e melodia', hint: 'Compare os presets comerciais: Rock, Jazz, Hip-Hop…' },
-  { id: 'bateria', n: 'Bateria', ico: 'drum', d: 'Bumbo, caixa e chimbal', hint: 'Isole cada peça: graves, médios e agudos.' },
-  { id: 'baixo', n: 'Baixo e acordes', ico: 'bass', d: 'Linha de baixo e acordes', hint: 'Veja onde ficam as notas graves e seus harmônicos.' },
-  { id: 'vogais', n: 'Vogais sintetizadas', ico: 'voice', d: 'A, É, I, Ó, U em sequência', hint: 'Observe os formantes mudando de vogal para vogal.' },
-  { id: 'harmonicos', n: 'Nota com harmônicos', ico: 'harm', d: 'Lá de 220 Hz e seus múltiplos', hint: 'Use a linha detalhada: cada pico é um harmônico.' },
-  { id: 'tons', n: 'Cinco tons puros', ico: 'tones', d: '63, 250, 1k, 4k e 12 kHz', hint: 'Zere uma banda e veja qual pico some.' },
-  { id: 'rosa', n: 'Ruído rosa', ico: 'pink', d: 'Mesma energia por oitava', hint: 'O melhor som para ouvir o formato da curva do EQ.' },
-  { id: 'branco', n: 'Ruído branco', ico: 'white', d: 'Mesma energia por hertz', hint: 'Compare com o rosa nas barras de 1/3 de oitava.' },
-  { id: 'varredura', n: 'Varredura 20 Hz → 20 kHz', ico: 'sweep', d: 'Sobe por toda a faixa em 8 s', hint: 'Até onde você consegue ouvir?' },
-  { id: 'tom', n: 'Tom ajustável', ico: 'tone', d: 'Frequência e forma de onda', hint: 'Relacione frequência, altura e timbre.' }
+  { id: 'musica', grp: 'Músicas', n: 'Pop: bateria, baixo e melodia', hint: 'Compare os presets comerciais: Rock, Jazz, Hip-Hop…' },
+  { id: 'baiao', grp: 'Músicas', n: 'Baião: zabumba, sanfona e triângulo', hint: 'Zabumba nos graves, sanfona nos médios, triângulo nos agudos. Tente isolar cada um.' },
+  { id: 'coral', grp: 'Músicas', n: 'Coral a três vozes: baixo, contralto e soprano', hint: 'Cada voz entra sozinha e depois as três cantam juntas. Veja onde cada uma aparece no espectrograma.' },
+  { id: 'bateria', grp: 'Instrumentos', n: 'Bateria', hint: 'Bumbo nos graves, caixa nos médios, chimbal nos agudos.' },
+  { id: 'baixo', grp: 'Instrumentos', n: 'Baixo e acordes', hint: 'Veja onde ficam as notas graves e seus harmônicos.' },
+  { id: 'vogais', grp: 'Instrumentos', n: 'Vogais sintetizadas (A, É, I, Ó, U)', hint: 'Observe os formantes mudando de vogal para vogal.' },
+  { id: 'harmonicos', grp: 'Sons de estudo', n: 'Nota com harmônicos (Lá 220 Hz)', hint: 'Use a linha detalhada: cada pico é um harmônico.' },
+  { id: 'tons', grp: 'Sons de estudo', n: 'Cinco tons puros (63 Hz a 12 kHz)', hint: 'Tons de 63, 250, 1000, 4000 e 12 000 Hz. Zere uma banda e veja qual pico some.' },
+  { id: 'rosa', grp: 'Sons de estudo', n: 'Ruído rosa', hint: 'Mesma energia por oitava: o melhor som para ouvir o formato da curva do EQ.' },
+  { id: 'branco', grp: 'Sons de estudo', n: 'Ruído branco', hint: 'Mesma energia por hertz. Compare com o rosa nas barras de 1/3 de oitava.' },
+  { id: 'varredura', grp: 'Sons de estudo', n: 'Varredura 20 Hz → 20 kHz', hint: 'Um tom que sobe por toda a faixa audível em 8 s. Até onde você consegue ouvir?' },
+  { id: 'tom', grp: 'Sons de estudo', n: 'Tom ajustável', hint: 'Escolha a frequência e a forma de onda.' }
 ];
 
 /* ---------- Estado ---------- */
@@ -536,6 +596,7 @@ function initAudio() {
   ctx = new AC();
   SR = ctx.sampleRate;
   N.srcBus = ctx.createGain(); N.srcBus.gain.value = 0;
+  N.kbBus = ctx.createGain(); N.kbBus.gain.value = 1;
   N.input = ctx.createGain();
   N.mystery = ctx.createBiquadFilter(); N.mystery.type = 'peaking'; N.mystery.Q.value = 1.41; N.mystery.gain.value = 0; N.mystery.frequency.value = 1000;
   N.hp = [0.5412, 1.3066].map(q => { const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.Q.value = q; f.frequency.value = 10; return f; });
@@ -547,7 +608,7 @@ function initAudio() {
   N.lim = ctx.createDynamicsCompressor();
   N.lim.threshold.value = -3; N.lim.knee.value = 2; N.lim.ratio.value = 20; N.lim.attack.value = 0.002; N.lim.release.value = 0.12;
   N.vol = ctx.createGain();
-  N.srcBus.connect(N.input);
+  N.srcBus.connect(N.input); N.kbBus.connect(N.input);
   N.input.connect(N.anDry);
   N.input.connect(N.mystery);
   let prev = N.mystery;
@@ -568,8 +629,9 @@ function applyAll(instant) {
   N.hp.forEach(f => f.frequency.setTargetAtTime(state.hp <= 20 ? 10 : state.hp, now(), t));
   const lpF = state.lp >= 20000 ? Math.min(22000, SR / 2 - 100) : state.lp;
   N.lp.forEach(f => f.frequency.setTargetAtTime(lpF, now(), t));
-  N.wet.gain.setTargetAtTime(state.eqOn ? 1 : 0, now(), t);
-  N.dry.gain.setTargetAtTime(state.eqOn ? 0 : 1, now(), t);
+  const eq = state.eqOn || state.mode === 'game';
+  N.wet.gain.setTargetAtTime(eq ? 1 : 0, now(), t);
+  N.dry.gain.setTargetAtTime(eq ? 0 : 1, now(), t);
   N.vol.gain.setTargetAtTime(state.vol * state.vol, now(), t);
 }
 
@@ -718,10 +780,94 @@ const GEN = {
     return normalize(a);
   }
 };
+/* ---------- Novas amostras: Baião e Coral ---------- */
+function peakTo(a, pk) { let p = 0; for (let i = 0; i < a.length; i++) { const v = Math.abs(a[i]); if (v > p) p = v; } const g = pk / (p || 1); for (let i = 0; i < a.length; i++) a[i] *= g; return a; }
+function mixInto(dst, srcA, g) { for (let i = 0; i < dst.length; i++) dst[i] += srcA[i] * g; }
+Object.assign(GEN, {
+  baiao() {
+    const bar = 1.0, bars = 8, T = bar * bars, s16 = bar / 8, L = Math.round(T * SR);
+    const zab = new Float32Array(L), tri = new Float32Array(L), mel = new Float32Array(L), cho = new Float32Array(L);
+    // Zabumba: só graves (senoide com queda de altura + ruído abafado)
+    const hitZ = (t0, g, dec) => {
+      const st = Math.round(t0 * SR), len = Math.round(0.6 * SR), al = Math.exp(-TAU * 160 / SR); let ph = 0, lp = 0, lp2 = 0;
+      for (let i = 0; i < len; i++) {
+        const t = i / SR, f = 58 + 55 * Math.exp(-t * 22); ph += TAU * f / SR;
+        const x = Math.random() * 2 - 1; lp = al * lp + (1 - al) * x; lp2 = al * lp2 + (1 - al) * lp;
+        zab[(st + i) % L] += (Math.sin(ph) * Math.exp(-t * dec) + lp2 * 3 * Math.exp(-t * 35)) * g;
+      }
+    };
+    // Triângulo: só agudos (parciais acima de 4,5 kHz)
+    const P = [[4650, 1], [6920, .6], [9310, .45], [11800, .3]];
+    const hitT = (t0, g, open) => {
+      const st = Math.round(t0 * SR), len = Math.round((open ? 0.5 : 0.09) * SR), dec = open ? 7 : 55;
+      for (let i = 0; i < len; i++) {
+        const t = i / SR; let s = 0;
+        for (const [f, a] of P) if (f < SR / 2 - 1000) s += a * Math.sin(TAU * f * t);
+        tri[(st + i) % L] += s * Math.exp(-t * dec) * Math.min(1, t / 0.0015) * g;
+      }
+    };
+    for (let b = 0; b < bars; b++) {
+      const o = b * bar;
+      hitZ(o, 1, 6); hitZ(o + 3 * s16, .8, 7); hitZ(o + 4 * s16, .45, 14);
+      for (let s = 0; s < 8; s++) hitT(o + s * s16, s % 4 === 0 ? .6 : .38, s === 2 || s === 6);
+    }
+    // Sanfona: melodia e acordes nos médios (harmônicos limitados a ~3,2 kHz)
+    const reed = n => 1 / Math.pow(n, 0.85);
+    const sanf = (arrD, t0, dur, f, g) => {
+      const maxN = Math.max(1, Math.floor(3200 / f));
+      addNote(arrD, t0, dur, f, { harm: reed, maxN, env: env(0.02, 0.5, 0.05), rel: 0.05, gain: g });
+      addNote(arrD, t0, dur, f * 1.0055, { harm: reed, maxN, env: env(0.02, 0.5, 0.05), rel: 0.05, gain: g * 0.6 });
+    };
+    const G4 = 392, A4 = 440, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, F4 = 349.23;
+    const melody = [[D5, 0, 1], [D5, 1, 1], [B4, 2, 1], [G4, 3, 1], [A4, 4, 1], [B4, 5, 1], [C5, 6, 2], [B4, 8, 1], [A4, 9, 1], [G4, 10, 1], [F4, 11, 1], [G4, 12, 3],
+      [D5, 16, 1], [E5, 17, 1], [F5, 18, 1], [E5, 19, 1], [D5, 20, 1], [C5, 21, 1], [B4, 22, 2], [A4, 24, 1], [G4, 25, 1], [F4, 26, 1], [A4, 27, 1], [G4, 28, 4]];
+    melody.forEach(([f, s, d]) => sanf(mel, s * 0.25, d * 0.25 - 0.03, f, 1));
+    const CH = { G: [196, 246.94, 293.66], F: [174.61, 220, 261.63], D: [220, 293.66, 369.99] };
+    ['G', 'G', 'F', 'F', 'G', 'G', 'D', 'G'].forEach((c, b) => [1, 3].forEach(e => CH[c].forEach(f => sanf(cho, b * bar + e * 0.25, 0.16, f, 1))));
+    peakTo(zab, 1); peakTo(tri, 1); peakTo(mel, 1); peakTo(cho, 1);
+    const a = new Float32Array(L);
+    mixInto(a, zab, 0.9); mixInto(a, tri, 0.28); mixInto(a, mel, 0.55); mixInto(a, cho, 0.3);
+    return normalize(a);
+  },
+  coral() {
+    const T = 8, L = Math.round(T * SR);
+    const sing = (notes, F, tilt, fmax) => {
+      const out = new Float32Array(L);
+      notes.forEach(([t0, dur, f0]) => {
+        const nH = Math.max(1, Math.floor(fmax / f0)), w = [0];
+        for (let n = 1; n <= nH; n++) { const f = n * f0; let h = 0.004; for (const [Fq, B, A] of F) h += A / (1 + ((f - Fq) / B) ** 2); w.push(h / Math.pow(n, tilt)); }
+        const st = Math.round(t0 * SR), len = Math.round((dur + 0.12) * SR); let ph = 0;
+        for (let i = 0; i < len; i++) {
+          const t = i / SR, e = Math.min(1, t / 0.07) * (t > dur ? Math.max(0, 1 - (t - dur) / 0.12) : 1);
+          const vib = t > 0.2 ? 0.012 * Math.sin(TAU * 5.5 * t) * Math.min(1, (t - 0.2) / 0.3) : 0;
+          ph += TAU * f0 * (1 + vib) / SR;
+          let s = 0; for (let n = 1; n <= nH; n++) s += w[n] * Math.sin(n * ph);
+          out[(st + i) % L] += s * e;
+        }
+      });
+      return peakTo(out, 1);
+    };
+    // Baixo (vogal "u"): graves
+    const bass = sing([[0, .5, 98], [.5, .5, 123.47], [1, .5, 146.83], [1.5, .5, 98], [6, 1, 98], [7, .5, 146.83], [7.5, .5, 98]],
+      [[300, 90, 1], [650, 110, .3]], 1.1, 1500);
+    // Contralto (vogal "a"): médios
+    const alto = sing([[2, .5, 293.66], [2.5, .5, 329.63], [3, .5, 293.66], [3.5, .5, 246.94], [6, 1, 246.94], [7, .5, 220], [7.5, .5, 246.94]],
+      [[750, 120, 1], [1150, 140, .8], [2400, 250, .12]], 0.6, 3500);
+    // Soprano (vogal "i", brilhante): agudos
+    const sop = sing([[4, .5, 783.99], [4.5, .5, 880], [5, .5, 987.77], [5.5, .5, 880], [6, 1, 783.99], [7, .5, 739.99], [7.5, .5, 783.99]],
+      [[3000, 400, .8], [4800, 600, 1], [7000, 900, .6]], 0.1, Math.min(11000, SR / 2 - 1000));
+    const a = new Float32Array(L);
+    mixInto(a, bass, 0.8); mixInto(a, alto, 0.6); mixInto(a, sop, 0.45);
+    return normalize(a);
+  }
+});
+
 function getBuffer(id) {
   if (!buffers[id]) { const d = GEN[id](); const b = ctx.createBuffer(1, d.length, SR); b.copyToChannel ? b.copyToChannel(d, 0) : b.getChannelData(0).set(d); buffers[id] = b; }
   return buffers[id];
 }
+
+
 
 
 
@@ -749,11 +895,8 @@ function startSource() {
   N.srcBus.gain.setTargetAtTime(1, now() + 0.07, 0.01);
   src = s;
 }
-async function play() {
-  initAudio();
-  if (ctx.state !== 'running') { try { await ctx.resume(); } catch (e) {} }
-  startSource(); state.playing = true; renderTransport();
-}
+async function resumeCtx() { initAudio(); if (ctx.state !== 'running') { try { await ctx.resume(); } catch (e) {} } }
+async function play() { await resumeCtx(); startSource(); state.playing = true; renderTransport(); }
 function pause() { if (ctx) stopSource(); state.playing = false; renderTransport(); }
 
 /* ---------- Utilidades ---------- */
@@ -768,26 +911,24 @@ const fmtLv = v => (v < 0 ? '−' : '') + fmtNum(Math.abs(v), 0) + ' dB';
 const fmtDb = v => (v > 0 ? '+' : v < 0 ? '−' : '') + fmtNum(Math.abs(v), 1) + ' dB';
 const bandName = i => BANDS[i] >= 1000 ? (BANDS[i] / 1000) + ' kHz' : BANDS[i] + ' Hz';
 const hue = f => 4 + 268 * Math.min(1, Math.max(0, Math.log(f / 20) / Math.log(1000)));
-
-/* ---------- Amostras ---------- */
-function renderSamples() {
-  const list = $('sampleList'); list.innerHTML = '';
-  SAMPLES.forEach(s => {
-    const b = document.createElement('button');
-    b.className = 'sample'; b.setAttribute('aria-pressed', s.id === state.sample); b.title = s.hint;
-    b.innerHTML = `<span class="ico"><svg viewBox="0 0 24 24">${ICONS[s.ico]}</svg></span><span class="nm">${s.n}</span><span class="ds">${s.d}</span>`;
-    b.onclick = () => selectSample(s.id);
-    list.appendChild(b);
+function fillSampleSelect(sel, current, recommend) {
+  sel.innerHTML = '';
+  [...new Set(SAMPLES.map(s => s.grp))].forEach(g => {
+    const og = document.createElement('optgroup'); og.label = g;
+    SAMPLES.filter(s => s.grp === g).forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.n + (s.id === recommend ? ' (recomendado)' : ''); og.appendChild(o); });
+    sel.appendChild(og);
   });
+  sel.value = current;
 }
+
+/* ---------- Amostra ---------- */
 function selectSample(id, noPlay) {
-  state.sample = id;
-  [...$('sampleList').children].forEach((b, i) => b.setAttribute('aria-pressed', SAMPLES[i].id === id));
+  state.sample = id; $('sampleSel').value = id;
   $('toneCtl').hidden = id !== 'tom';
-  const s = SAMPLES.find(x => x.id === id);
-  $('nowName').textContent = s.n; $('nowHint').textContent = s.hint;
-  if (!noPlay) play();
+  if (!noPlay) play(); else if (state.playing) startSource();
+  requestAnimationFrame(resize);
 }
+$('sampleSel').addEventListener('change', e => selectSample(e.target.value));
 const toneMap = v => 20 * Math.pow(1000, v / 1000);
 function renderTone() {
   $('toneHz').textContent = fmtHz(state.toneF);
@@ -815,17 +956,11 @@ $('playBtn').onclick = () => state.playing ? pause() : play();
 function setEq(on) {
   state.eqOn = on;
   $('eqSwitch').setAttribute('aria-pressed', on);
-  $('eqTxt').innerHTML = on ? '<span class="long">Equalizador</span><span class="short">EQ</span> ligado' : '<span class="long">Equalizador</span><span class="short">EQ</span> desligado (original)';
+  $('eqTxt').innerHTML = '<span class="long">Equalizador</span><span class="short">EQ</span> ' + (on ? 'ligado' : 'desligado');
   applyAll();
 }
 $('eqSwitch').onclick = () => setEq(!state.eqOn);
 $('vol').addEventListener('input', e => { state.vol = e.target.value / 100; if (ctx) N.vol.gain.setTargetAtTime(state.vol * state.vol, now(), 0.02); });
-document.addEventListener('keydown', e => {
-  const tg = e.target;
-  if (tg.matches('input, textarea, select') || tg.classList.contains('vs')) return;
-  if (e.code === 'Space' && !tg.matches('button')) { e.preventDefault(); state.playing ? pause() : play(); }
-  if ((e.key === 'e' || e.key === 'E') && state.mode === 'lab') setEq(!state.eqOn);
-});
 
 /* ---------- Equalizador ---------- */
 const vsEls = [];
@@ -865,10 +1000,10 @@ function setBand(i, v, user) {
 }
 function toCustom() {
   state.custom = { b: state.gains.slice(), hp: state.hp, lp: state.lp };
-  if (state.preset !== 'custom') { state.preset = 'custom'; renderChips(); }
+  if (state.preset !== 'custom') { state.preset = 'custom'; renderPreset(); }
 }
-const hpMap = v => v <= 0 ? 20 : Math.round(20 * Math.pow(100, v / 1000));
-const hpInv = f => f <= 20 ? 0 : Math.round(1000 * Math.log(f / 20) / Math.log(100));
+const hpMap = v => v <= 0 ? 20 : Math.round(20 * Math.pow(250, v / 1000));
+const hpInv = f => f <= 20 ? 0 : Math.round(1000 * Math.log(f / 20) / Math.log(250));
 const lpMap = v => v >= 1000 ? 20000 : Math.round(200 * Math.pow(100, v / 1000));
 const lpInv = f => f >= 20000 ? 1000 : Math.round(1000 * Math.log(f / 200) / Math.log(100));
 function renderFilters() {
@@ -886,40 +1021,42 @@ function applyPreset(id) {
   state.hp = s.hp; state.lp = s.lp; renderFilters();
   applyAll();
   if (!state.eqOn && id !== 'neutro') setEq(true);
-  renderChips();
+  renderPreset();
 }
-function renderChips() {
-  ['chipsCom', 'chipsDid'].forEach(k => {
-    const box = $(k);
-    if (!box.children.length) {
-      PRESETS.filter(p => p.g === (k === 'chipsCom' ? 'com' : 'did')).forEach(p => {
-        const c = document.createElement('button'); c.className = 'chip' + (p.g === 'did' ? ' did' : ''); c.textContent = p.n; c.dataset.id = p.id;
-        c.onclick = () => applyPreset(p.id); box.appendChild(c);
-      });
-    }
-    [...box.children].forEach(c => c.setAttribute('aria-pressed', c.dataset.id === state.preset));
+function buildPresetSelect() {
+  const sel = $('presetSel');
+  [['com', 'Presets comerciais'], ['did', 'Presets didáticos']].forEach(([g, lbl]) => {
+    const og = document.createElement('optgroup'); og.label = lbl;
+    PRESETS.filter(p => p.g === g).forEach(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = p.n; og.appendChild(o); });
+    sel.appendChild(og);
   });
+  sel.addEventListener('change', e => applyPreset(e.target.value));
+}
+function renderPreset() {
+  $('presetSel').value = state.preset;
   const p = PRESETS.find(x => x.id === state.preset);
   $('pdesc').innerHTML = `<b>${p.n}.</b> ${p.d}`;
 }
 $('resetBtn').onclick = () => applyPreset('neutro');
 
-/* ---------- Modos ---------- */
+/* ---------- Abas ---------- */
 function setMode(m) {
+  const prev = state.mode;
   state.mode = m;
+  document.body.className = 'm-' + m;
   document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-selected', b.dataset.mode === m));
   $('work').hidden = m === 'cc'; $('ccPage').hidden = m !== 'cc';
-  const game = m === 'game';
-  ['labCtl', 'labBands', 'labFilters'].forEach(id => $(id).hidden = game);
-  $('samplesPanel').hidden = game; $('scorePanel').hidden = !game;
-  $('eqSwitch').disabled = game;
-  if (game) { renderGame(); setMystery(); }
-  else { if (ctx) N.mystery.gain.setTargetAtTime(0, now(), 0.02); $('cover').hidden = true; }
+  if (prev === 'kb' && m !== 'kb') allNotesOff();
+  if (m === 'kb') { pause(); resumeCtx(); }
+  if (m === 'cc') pause();
+  if (m === 'game') { renderGame(); } else { $('work').classList.remove('hidegfx'); }
+  if (prev === 'game' && m !== 'game') { G.ab = 'b'; }
+  setMystery(); applyAll();
   requestAnimationFrame(resize);
 }
 document.querySelector('.modes').addEventListener('click', e => { const b = e.target.closest('button[data-mode]'); if (b) setMode(b.dataset.mode); });
 
-/* ---------- Jogo em grupo ---------- */
+/* ---------- SpectroGame ---------- */
 const LEVELS = [
   { name: 'Fácil', bands: [1, 3, 5, 7, 8], gain: 12, desc: '+12 dB' },
   { name: 'Médio', bands: [1, 2, 3, 4, 5, 6, 7, 8], gain: 9, desc: '+9 dB' },
@@ -939,14 +1076,14 @@ function renderNames() {
   }
 }
 $('gCount').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; G.n = +b.dataset.n; [...$('gCount').children].forEach(x => x.setAttribute('aria-pressed', x === b)); renderNames(); });
-$('gSample').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; G.sample = b.dataset.s; [...$('gSample').children].forEach(x => x.setAttribute('aria-pressed', x === b)); });
-$('gHide').addEventListener('change', e => { G.hide = e.target.checked; });
+$('gSampleSel').addEventListener('change', e => { G.sample = e.target.value; });
+$('gHide').addEventListener('change', e => { G.hide = e.target.checked; renderGame(); });
 
 function gStart(keepPlayers) {
   if (!keepPlayers) G.players = Array.from({ length: G.n }, (_, i) => ({ name: (G.names[i] || '').trim() || `Jogador ${i + 1}`, pts: [0, 0, 0], log: [[], [], []] }));
   else G.players.forEach(p => { p.pts = [0, 0, 0]; p.log = [[], [], []]; });
   G.level = 0; G.round = 0; G.turn = 0; G.phase = 'play'; G.target = null;
-  applyPreset('neutro'); setEq(true);
+  applyPreset('neutro');
   selectSample(G.sample, true);
   gNewTurn();
   play();
@@ -980,10 +1117,9 @@ function gNext() {
   gNewTurn();
 }
 const total = p => p.pts[0] + p.pts[1] + p.pts[2];
+const escHtml = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 function renderScore() {
   const box = $('plList'); box.innerHTML = '';
-  $('scoreMax').textContent = G.players.length ? 'máx. 27' : '';
-  if (!G.players.length) { box.innerHTML = '<p class="hint">O placar aparece quando o jogo começa.</p>'; return; }
   G.players.forEach((p, k) => {
     const d = document.createElement('div');
     d.className = 'pl' + (G.phase === 'play' && k === G.turn ? ' cur' : ''); d.style.setProperty('--pc', PCOL[k]);
@@ -994,16 +1130,16 @@ function renderScore() {
   });
 }
 function renderGame() {
-  renderScore();
-  $('gSetup').hidden = G.phase !== 'setup' || state.mode !== 'game';
-  $('gPlay').hidden = G.phase !== 'play' || state.mode !== 'game';
-  $('gEnd').hidden = G.phase !== 'end' || state.mode !== 'game';
-  $('cover').hidden = !(state.mode === 'game' && G.phase === 'play' && !G.answered && G.hide);
-  if (state.mode !== 'game') return;
+  $('gSetup').hidden = G.phase !== 'setup';
+  $('gPlay').hidden = G.phase !== 'play';
+  $('gEnd').hidden = G.phase !== 'end';
+  $('gPhaseLbl').textContent = { setup: 'Preparação', play: 'Em jogo', end: 'Fim de jogo' }[G.phase];
+  $('work').classList.toggle('hidegfx', state.mode === 'game' && G.phase === 'play' && !G.answered && G.hide);
   if (G.phase === 'setup') { renderNames(); return; }
+  renderScore();
   if (G.phase === 'play') {
     const lv = LEVELS[G.level], p = G.players[G.turn];
-    $('gLvl').textContent = `Nível ${lv.name} (${lv.desc}) · rodada ${G.round + 1} de ${ROUNDS}`;
+    $('gLvl').textContent = `Nível ${lv.name} (${lv.desc}) · jogada ${G.round + 1} de ${ROUNDS}`;
     $('gWho').textContent = 'Vez de ' + p.name; $('gWho').style.color = PCOL[G.turn];
     const done = G.level * ROUNDS * G.players.length + G.turn * ROUNDS + G.round + (G.answered ? 1 : 0);
     $('gProg').style.width = (100 * done / (LEVELS.length * ROUNDS * G.players.length)) + '%';
@@ -1032,7 +1168,7 @@ function renderGame() {
     const last = G.level === LEVELS.length - 1 && endPlayer && lastPlayer;
     const nextP = G.players[(G.turn + 1) % G.players.length];
     $('gNext').textContent = last ? 'Ver resultado' : !endPlayer ? 'Próxima jogada' : lastPlayer ? `Nível ${LEVELS[G.level + 1].name}: vez de ${G.players[0].name}` : `Passar o fone para ${nextP.name}`;
-    if (G.answered && endPlayer && !last && G.players.length > 1) fb.innerHTML += ` <br><b>Fim das suas jogadas neste nível.</b> Passe o fone para ${(lastPlayer ? G.players[0] : nextP).name.replace(/</g, '&lt;')}.`;
+    if (G.answered && endPlayer && !last && G.players.length > 1) fb.innerHTML += ` <br><b>Fim das suas jogadas neste nível.</b> Passe o fone para ${escHtml((lastPlayer ? G.players[0] : nextP).name)}.`;
   }
   if (G.phase === 'end') {
     const ranked = G.players.map((p, k) => ({ p, k })).sort((a, b) => total(b.p) - total(a.p));
@@ -1048,7 +1184,141 @@ $('gNext').onclick = gNext;
 $('gAB').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; G.ab = b.dataset.ab; if (!state.playing) play(); setMystery(); renderGame(); });
 $('gQuit').onclick = () => { G.phase = 'end'; G.target = null; setMystery(); renderGame(); };
 $('gAgain').onclick = () => gStart(true);
-$('gNew').onclick = () => { G.phase = 'setup'; G.players = []; renderGame(); };
+$('gNew').onclick = () => { G.phase = 'setup'; G.players = []; G.target = null; setMystery(); renderGame(); };
+
+/* ---------- Teclado ---------- */
+const INSTR = [
+  { id: 'piano', n: 'Piano', h: [1, .7, .45, .35, .25, .18, .12, .09, .06, .05, .03, .02], att: .005, dec: .9, sus: 0, rel: .25, d: '<b>Piano:</b> ataque rápido e som que decai sozinho. Muitos harmônicos, que somem mais depressa que a fundamental.' },
+  { id: 'orgao', n: 'Órgão', h: { 1: 1, 2: .8, 3: .5, 4: .6, 6: .3, 8: .35 }, att: .01, dec: 0, sus: 1, rel: .06, d: '<b>Órgão:</b> soma de tubos em oitavas (harmônicos 1, 2, 4, 8) e quintas (3, 6). O som não decai.' },
+  { id: 'flauta', n: 'Flauta', h: [1, .22, .08, .03, .015], att: .08, dec: 0, sus: .9, rel: .12, vib: [5, .004], d: '<b>Flauta:</b> quase um tom puro. A fundamental domina e os harmônicos são fracos.' },
+  { id: 'clarinete', n: 'Clarinete', h: { 1: 1, 2: .03, 3: .75, 4: .03, 5: .5, 6: .02, 7: .35, 9: .2, 11: .12, 13: .07 }, att: .04, dec: 0, sus: .95, rel: .1, d: '<b>Clarinete:</b> tubo fechado numa ponta, por isso quase só harmônicos ímpares (1, 3, 5, 7…). Veja os "buracos" no espectro.' },
+  { id: 'violino', n: 'Violino', h: Array.from({ length: 22 }, (_, i) => (1 / (i + 1)) * (1 + 1.2 * Math.exp(-(((i + 1) - 5) ** 2) / 8))), att: .12, dec: 0, sus: .9, rel: .2, vib: [5.5, .006], d: '<b>Violino:</b> corda friccionada, rica em harmônicos (todos, pares e ímpares), com vibrato.' },
+  { id: 'trompete', n: 'Trompete', h: [.55, .85, 1, .9, .75, .6, .45, .35, .25, .18, .12, .08, .05], att: .04, dec: 0, sus: .85, rel: .1, d: '<b>Trompete:</b> som brilhante; os harmônicos 2 a 5 são mais fortes que a própria fundamental.' },
+  { id: 'sino', n: 'Sino (parciais inarmônicos)', part: [[1, 1, 1], [2.76, .6, .6], [5.4, .4, .35], [8.93, .25, .2]], att: .002, dec: 2.2, sus: 0, rel: .5, d: '<b>Sino:</b> as frequências dos parciais (1; 2,76; 5,4; 8,93 × f) <b>não</b> são múltiplos inteiros. Por isso a altura soa menos definida.' }
+];
+const KB = { oct: 4, inst: 'piano', sus: '1', voices: new Map(), waves: {} };
+const WHITE = [0, 2, 4, 5, 7, 9, 11], BLACK = [1, 3, 6, 8, 10];
+const KEYMAP = { a: 0, w: 1, s: 2, e: 3, d: 4, f: 5, t: 6, g: 7, y: 8, h: 9, u: 10, j: 11 };
+const KEYLET = Object.fromEntries(Object.entries(KEYMAP).map(([k, v]) => [v, k.toUpperCase()]));
+function buildKeys() {
+  const box = $('keys'); box.innerHTML = '';
+  const ww = 100 / 7;
+  WHITE.forEach((k, i) => {
+    const el = document.createElement('div'); el.className = 'key w'; el.dataset.k = k;
+    el.style.left = (i * ww) + '%'; el.style.width = ww + '%';
+    el.innerHTML = `<span class="n">${NOTE[k]}</span><kbd>${KEYLET[k]}</kbd>`;
+    box.appendChild(el);
+  });
+  const bpos = { 1: 1, 3: 2, 6: 4, 8: 5, 10: 6 };
+  BLACK.forEach(k => {
+    const el = document.createElement('div'); el.className = 'key b'; el.dataset.k = k;
+    const bw = ww * 0.6; el.style.left = (bpos[k] * ww - bw / 2) + '%'; el.style.width = bw + '%';
+    el.innerHTML = `<span class="n">${NOTE[k]}</span><kbd>${KEYLET[k]}</kbd>`;
+    box.appendChild(el);
+  });
+  const ptr = new Map();
+  box.addEventListener('pointerdown', e => {
+    const el = e.target.closest('.key'); if (!el) return;
+    e.preventDefault(); box.setPointerCapture(e.pointerId);
+    const k = +el.dataset.k; ptr.set(e.pointerId, k); noteOn(k, 'p' + e.pointerId);
+  });
+  box.addEventListener('pointermove', e => {
+    if (!ptr.has(e.pointerId)) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('.key'); if (!el) return;
+    const k = +el.dataset.k; if (k === ptr.get(e.pointerId)) return;
+    noteOff('p' + e.pointerId); ptr.set(e.pointerId, k); noteOn(k, 'p' + e.pointerId);
+  });
+  const up = e => { if (!ptr.has(e.pointerId)) return; ptr.delete(e.pointerId); noteOff('p' + e.pointerId); };
+  box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
+}
+function instWave(inst) {
+  if (KB.waves[inst.id]) return KB.waves[inst.id];
+  let arr = inst.h;
+  if (!Array.isArray(arr)) { const m = Math.max(...Object.keys(arr).map(Number)); const a = new Array(m).fill(0); Object.entries(arr).forEach(([k, v]) => a[k - 1] = v); arr = a; }
+  const re = new Float32Array(arr.length + 1), im = new Float32Array(arr.length + 1);
+  arr.forEach((v, i) => im[i + 1] = v);
+  return (KB.waves[inst.id] = ctx.createPeriodicWave(re, im));
+}
+const midiOf = k => 12 * (KB.oct + 1) + k;
+const freqOf = m => 440 * Math.pow(2, (m - 69) / 12);
+async function noteOn(k, id) {
+  await resumeCtx();
+  if (KB.voices.has(id)) noteOff(id, true);
+  const inst = INSTR.find(x => x.id === KB.inst), f = freqOf(midiOf(k)), t = now();
+  const env = ctx.createGain(); env.gain.value = 0; env.connect(N.kbBus);
+  const oscs = [];
+  const peak = 0.28;
+  if (inst.part) {
+    inst.part.forEach(([r, a, ]) => {
+      if (f * r > SR / 2 - 500) return;
+      const o = ctx.createOscillator(); o.frequency.value = f * r;
+      const g = ctx.createGain(); g.gain.value = a * 0.45;
+      g.gain.setValueAtTime(a * 0.45, t); g.gain.setTargetAtTime(0, t, inst.dec / (1 + r * 0.6));
+      o.connect(g); g.connect(env); oscs.push(o);
+    });
+  } else {
+    const o = ctx.createOscillator(); o.setPeriodicWave(instWave(inst)); o.frequency.value = f; o.connect(env); oscs.push(o);
+    if (inst.vib) {
+      const lfo = ctx.createOscillator(); lfo.frequency.value = inst.vib[0];
+      const lg = ctx.createGain(); lg.gain.value = f * inst.vib[1];
+      lfo.connect(lg); lg.connect(o.frequency); lfo.start(t + 0.15); oscs.push(lfo);
+    }
+  }
+  env.gain.setValueAtTime(0, t);
+  env.gain.linearRampToValueAtTime(peak, t + inst.att);
+  if (inst.dec) env.gain.setTargetAtTime(peak * inst.sus, t + inst.att, inst.dec / 3);
+  else env.gain.setTargetAtTime(peak * inst.sus, t + inst.att, 0.05);
+  oscs.forEach(o => o.start(t));
+  const v = { env, oscs, k, inst };
+  KB.voices.set(id, v);
+  if (KB.sus !== 'hold') v.timer = setTimeout(() => noteOff(id), +KB.sus * 1000);
+  markKey(k, true);
+  $('kNote').textContent = NOTE[k] + (KB.oct);
+  $('kFreq').textContent = fmtHz(f);
+  $('kLam').textContent = fmtLambda(f);
+}
+function noteOff(id, fast) {
+  const v = KB.voices.get(id); if (!v) return;
+  KB.voices.delete(id); clearTimeout(v.timer);
+  const t = now(), rel = fast ? 0.02 : v.inst.rel;
+  v.env.gain.cancelScheduledValues(t);
+  v.env.gain.setValueAtTime(v.env.gain.value, t);
+  v.env.gain.setTargetAtTime(0, t, rel / 3);
+  v.oscs.forEach(o => { try { o.stop(t + rel * 2 + 0.05); } catch (e) {} });
+  setTimeout(() => { try { v.env.disconnect(); } catch (e) {} }, (rel * 2 + 0.2) * 1000);
+  if (![...KB.voices.values()].some(x => x.k === v.k)) markKey(v.k, false);
+}
+function allNotesOff() { [...KB.voices.keys()].forEach(id => noteOff(id, true)); }
+function markKey(k, on) { const el = $('keys').querySelector(`.key[data-k="${k}"]`); if (el) el.classList.toggle('on', on); }
+function setOct(o) { KB.oct = Math.max(1, Math.min(7, o)); $('octVal').textContent = KB.oct; }
+$('octDown').onclick = () => setOct(KB.oct - 1);
+$('octUp').onclick = () => setOct(KB.oct + 1);
+$('susSel').addEventListener('change', e => { KB.sus = e.target.value; });
+function buildInst() {
+  const sel = $('instSel');
+  INSTR.forEach(i => { const o = document.createElement('option'); o.value = i.id; o.textContent = i.n; sel.appendChild(o); });
+  sel.addEventListener('change', e => { KB.inst = e.target.value; renderInst(); });
+  renderInst();
+}
+function renderInst() { $('instDesc').innerHTML = INSTR.find(x => x.id === KB.inst).d; }
+
+/* ---------- Teclas do computador ---------- */
+document.addEventListener('keydown', e => {
+  const tg = e.target;
+  if (tg.matches('input[type=text], input:not([type]), textarea') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (state.mode === 'kb') {
+    const key = e.key.toLowerCase();
+    if (key in KEYMAP) { e.preventDefault(); if (!e.repeat) noteOn(KEYMAP[key], 'k' + key); return; }
+    if (key === 'z') { setOct(KB.oct - 1); return; }
+    if (key === 'x') { setOct(KB.oct + 1); return; }
+    return;
+  }
+  if (tg.matches('input, select') || tg.classList.contains('vs')) return;
+  if (e.code === 'Space' && !tg.matches('button') && state.mode !== 'cc') { e.preventDefault(); state.playing ? pause() : play(); }
+  if ((e.key === 'e' || e.key === 'E') && state.mode === 'lab') setEq(!state.eqOn);
+});
+document.addEventListener('keyup', e => { if (state.mode !== 'kb') return; const key = e.key.toLowerCase(); if (key in KEYMAP && KB.sus === 'hold') noteOff('k' + key); });
+window.addEventListener('blur', () => { if (KB.sus === 'hold') allNotesOff(); });
 
 /* ---------- Visualização ---------- */
 const css = getComputedStyle(document.documentElement);
@@ -1063,6 +1333,7 @@ const xOf = f => PADL + (SW - PADL - PADR) * Math.log(f / FMIN) / LR;
 const fOf = x => FMIN * Math.exp((x - PADL) / (SW - PADL - PADR) * LR);
 const yOf = db => PADT + (SH - PADT - PADB) * (1 - (Math.max(DBMIN, Math.min(DBMAX, db)) - DBMIN) / (DBMAX - DBMIN));
 const yEq = db => PADT + (SH - PADT - PADB) * (0.5 - Math.max(-EQR, Math.min(EQR, db)) / (2 * EQR));
+const isLive = () => !!ctx && (state.playing || (state.mode === 'kb' && ctx.state === 'running'));
 
 function resize() {
   dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1079,21 +1350,20 @@ function resize() {
   }
   buildSgAxis();
   fitSliders();
-  const tp = document.querySelector('.transport'); $('cover').style.top = (tp.offsetHeight + 10) + 'px';
 }
 new ResizeObserver(() => { clearTimeout(window._rz); window._rz = setTimeout(resize, 60); }).observe($('center'));
 
 /* Altura das barras do EQ conforme o espaço livre da coluna direita */
 function fitSliders() {
   const col = $('rightCol');
-  if (state.mode !== 'lab' || !col.offsetParent) return;
-  const stacked = getComputedStyle($('work')).gridTemplateColumns.split(' ').length === 1;
+  if (!(state.mode === 'lab' || state.mode === 'kb')) return;
+  const stacked = getComputedStyle($('work')).display !== 'grid';
   const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--vsh')) || 170;
   let h = 170;
   if (!stacked) {
-    const secs = [...col.children].filter(c => !c.hidden);
+    const secs = [...col.children].filter(c => c.offsetParent !== null);
     const content = secs.reduce((a, c) => a + c.offsetHeight, 0) + 10 * (secs.length - 1);
-    h = Math.round(Math.max(110, Math.min(240, cur + col.clientHeight - content - 2)));
+    h = Math.round(Math.max(100, Math.min(240, cur + col.clientHeight - content - 2)));
   }
   document.documentElement.style.setProperty('--vsh', h + 'px');
 }
@@ -1104,8 +1374,11 @@ function eqCurve() {
   const n = 240;
   if (!respF) { respF = new Float32Array(n); for (let i = 0; i < n; i++) respF[i] = FMIN * Math.exp(LR * i / (n - 1)); respMag = new Float32Array(n); respTmp = new Float32Array(n); respPh = new Float32Array(n); }
   respMag.fill(1);
-  const reveal = state.mode === 'game' && G.phase === 'play' && G.answered && G.ab === 'b';
-  if (state.mode === 'game') { if (reveal) N.mystery.getFrequencyResponse(respF, respMag, respPh); return respMag; }
+  if (state.mode === 'game') {
+    const reveal = G.phase === 'play' && G.answered && G.ab === 'b';
+    if (reveal) N.mystery.getFrequencyResponse(respF, respMag, respPh);
+    return respMag;
+  }
   if (!state.eqOn) return respMag;
   [...N.hp, ...N.bands, ...N.lp].forEach(f => { f.getFrequencyResponse(respF, respTmp, respPh); for (let i = 0; i < n; i++) respMag[i] *= respTmp[i]; });
   return respMag;
@@ -1131,7 +1404,7 @@ function drawGrid() {
   sx.strokeStyle = COL.grid; sx.lineWidth = 1; sx.fillStyle = COL.ink; sx.textAlign = 'right';
   for (let db = DBMIN; db <= DBMAX; db += 20) { const y = Math.round(yOf(db)) + 0.5; sx.beginPath(); sx.moveTo(PADL, y); sx.lineTo(SW - PADR, y); sx.stroke(); sx.fillText(db + '', PADL - 6, y + 3); }
   sx.textAlign = 'center';
-  BANDS.forEach((f, i) => { const x = Math.round(xOf(f)) + 0.5; sx.beginPath(); sx.moveTo(x, PADT); sx.lineTo(x, SH - PADB); sx.stroke(); sx.fillText(BAND_LBL[i], x, SH - PADB + 14); });
+  BANDS.forEach((f, i) => { const x = Math.round(xOf(f)) + 0.5; sx.beginPath(); sx.moveTo(x, PADT); sx.lineTo(x, SH - PADB); sx.stroke(); if (SW > 420 || i % 2 === 0) sx.fillText(BAND_LBL[i], x, SH - PADB + 14); });
   sx.fillText('Hz', SW - PADR + 16, SH - PADB + 14);
   sx.save(); sx.translate(10, SH / 2); sx.rotate(-Math.PI / 2); sx.fillText('nível (dB)', 0, 0); sx.restore();
   sx.textAlign = 'left'; sx.fillStyle = COL.curve;
@@ -1142,8 +1415,8 @@ function setTxt(id, t) { const el = $(id); if (el._t !== t) { el.textContent = t
 function drawSpectrum() {
   if (!SW) return;
   drawGrid();
-  const live = ctx && state.playing;
-  if (ctx && live) { N.anOut.getFloatFrequencyData(outData); N.anDry.getFloatFrequencyData(dryData); }
+  const live = isLive();
+  if (live) { N.anOut.getFloatFrequencyData(outData); N.anDry.getFloatFrequencyData(dryData); }
   if (live) {
     const cl = x => Math.max(PADL, Math.min(SW - PADR, x));
     if (state.specMode === 'bars') {
@@ -1173,15 +1446,14 @@ function drawSpectrum() {
       sx.lineWidth = 1.2; sx.globalAlpha = 0.7; line(dryData, COL.hi, null); sx.globalAlpha = 1;
     }
   } else {
-    sx.fillStyle = COL.hi; sx.font = '600 15px Archivo, sans-serif'; sx.textAlign = 'center';
-    sx.fillText('Escolha uma amostra ou toque em Tocar', (PADL + SW - PADR) / 2, SH / 2 - 30);
+    sx.fillStyle = COL.hi; sx.font = `600 ${SW < 520 ? 12.5 : 15}px Archivo, sans-serif`; sx.textAlign = 'center';
+    sx.fillText(state.mode === 'kb' ? 'Toque uma tecla para começar' : 'Escolha uma amostra e toque em Tocar', (PADL + SW - PADR) / 2, SH / 2 - 30);
   }
   const mag = eqCurve();
   sx.strokeStyle = COL.curve; sx.lineWidth = 2.5; sx.setLineDash(state.eqOn || state.mode === 'game' ? [] : [6, 5]); sx.beginPath();
   if (mag) mag.forEach((m, i) => { const x = xOf(respF[i]), y = yEq(20 * Math.log10(m + 1e-9)); i ? sx.lineTo(x, y) : sx.moveTo(x, y); });
   else { sx.moveTo(PADL, yEq(0)); sx.lineTo(SW - PADR, yEq(0)); }
   sx.stroke(); sx.setLineDash([]);
-  // Pico
   let pf = null;
   if (live) {
     const bh = binHz(); let mi = -1, mv = -200;
@@ -1189,7 +1461,6 @@ function drawSpectrum() {
     if (mi > 0 && mv > -95 && mi * bh >= 25) { const a = outData[mi - 1], b = outData[mi], c = outData[mi + 1], den = a - 2 * b + c; pf = (mi + (den ? 0.5 * (a - c) / den : 0)) * bh; }
   }
   setTxt('rPeakF', pf ? fmtHz(pf) : '—'); setTxt('rPeakN', pf ? noteName(pf) : '—'); setTxt('rPeakL', pf ? 'λ ' + fmtLambda(pf) : '—');
-  // Cursor
   if (hoverX !== null && hoverX >= PADL && hoverX <= SW - PADR) {
     const f = fOf(hoverX);
     sx.strokeStyle = COL.hi; sx.globalAlpha = 0.5; sx.beginPath(); sx.moveTo(hoverX + 0.5, PADT); sx.lineTo(hoverX + 0.5, SH - PADB); sx.stroke(); sx.globalAlpha = 1;
@@ -1202,7 +1473,7 @@ spec.addEventListener('pointermove', e => { const r = spec.getBoundingClientRect
 spec.addEventListener('pointerleave', () => { hoverX = null; });
 
 /* Espectrograma com régua de tempo, leitura e marca */
-const RULER = 18, PPS = 90; // pixels (CSS) por segundo
+const RULER = 18, PPS = 90;
 const LUT = (() => {
   const stops = [[0, [11, 17, 24]], [0.25, [40, 50, 130]], [0.5, [25, 150, 165]], [0.78, [240, 222, 80]], [1, [255, 255, 255]]];
   const t = new Uint8ClampedArray(256 * 3);
@@ -1244,7 +1515,7 @@ function sgColumn() {
   return col;
 }
 function drawSgram(dt) {
-  if (ctx && state.playing && !state.frozen && sgMap && GW) {
+  if (isLive() && !state.frozen && sgMap && GW) {
     sgClock += dt;
     acc += dt * PPS * dpr;
     let n = Math.floor(acc); acc -= n; n = Math.min(n, GW);
@@ -1260,7 +1531,6 @@ function drawOverlay() {
   if (!OW) return;
   ox.clearRect(0, 0, OW, OH);
   const h = OH - RULER;
-  // régua de tempo
   ox.fillStyle = COL.screen; ox.fillRect(0, h, OW, RULER);
   ox.strokeStyle = COL.grid; ox.beginPath(); ox.moveTo(0, h + 0.5); ox.lineTo(OW, h + 0.5); ox.stroke();
   ox.font = '10px "IBM Plex Mono", monospace'; ox.fillStyle = COL.ink; ox.textAlign = 'center';
@@ -1268,15 +1538,13 @@ function drawOverlay() {
   for (let s = 0; s <= secs; s += 0.5) {
     const x = Math.round(OW - s * PPS) + 0.5, major = Math.abs(s % 1) < 1e-6;
     ox.strokeStyle = major ? COL.ink : COL.grid; ox.beginPath(); ox.moveTo(x, h); ox.lineTo(x, h + (major ? 6 : 3)); ox.stroke();
-    if (major && x > 56 && x < OW - 20) ox.fillText(s === 0 ? '' : '−' + s + ' s', x, h + 15);
+    if (major && x > 56 && x < OW - 40) ox.fillText(s === 0 ? '' : '−' + s + ' s', x, h + 15);
   }
   ox.textAlign = 'right'; ox.fillStyle = COL.hi; ox.fillText(state.frozen ? 'congelado' : 'agora', OW - 3, h + 15);
-  // marca
   if (mark !== null) {
     const x = OW - (sgClock - mark) * PPS;
     if (x >= 0) { ox.strokeStyle = COL.marker; ox.lineWidth = 1.5; ox.beginPath(); ox.moveTo(x, 0); ox.lineTo(x, h); ox.stroke(); ox.lineWidth = 1; }
   }
-  // cursor
   if (sgHover) {
     const { x, y } = sgHover;
     ox.strokeStyle = 'rgba(220,230,240,.55)'; ox.beginPath(); ox.moveTo(x + 0.5, 0); ox.lineTo(x + 0.5, h); ox.moveTo(0, y + 0.5); ox.lineTo(OW, y + 0.5); ox.stroke();
@@ -1303,8 +1571,13 @@ function loop(t) {
 /* ---------- Início ---------- */
 $('regTable').innerHTML = REGIONS.map(r => `<tr><td><b>${r.n}</b></td><td style="font-family:var(--font-mono);white-space:nowrap">${fmtHzShort(r.a)} – ${fmtHzShort(r.b)}</td><td>${r.t}</td></tr>`).join('');
 $('specMode').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; state.specMode = b.dataset.m; [...$('specMode').children].forEach(x => x.setAttribute('aria-pressed', x === b)); });
-renderSamples(); buildBands(); state.gains.forEach((_, i) => renderBand(i)); renderFilters(); renderChips(); renderTone(); renderTransport(); renderNames();
+fillSampleSelect($('sampleSel'), state.sample);
+fillSampleSelect($('gSampleSel'), G.sample, 'rosa');
+buildPresetSelect(); buildBands(); state.gains.forEach((_, i) => renderBand(i)); renderFilters(); renderPreset();
+renderTone(); renderTransport(); setEq(true); buildKeys(); buildInst(); renderGame();
+selectSample(state.sample, true);
 $('toneFreq').value = Math.round(1000 * Math.log(440 / 20) / Math.log(1000));
+document.body.className = 'm-lab';
 try { initAudio(); } catch (e) { console.warn(e); }
 resize(); buildSgMap();
 window.addEventListener('resize', () => { clearTimeout(window._rz2); window._rz2 = setTimeout(resize, 100); });
