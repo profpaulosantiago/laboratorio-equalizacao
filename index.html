@@ -17,7 +17,7 @@
   --ok:#157A3A; --ok-soft:#E2F4E8; --bad:#B42318; --bad-soft:#FBE7E5; --mid:#A15C00; --mid-soft:#FDF0DC; --warn:#9A5B06;
   --p1:#1D5DB8; --p2:#C2410C; --p3:#15803D; --p4:#7E3FB8;
   --key-w:#FBFCFD; --key-w-on:#CFE0F8; --key-b:#1B222B; --key-b-on:#3E6FB8;
-  --screen:#0B1118; --screen-2:#111A24; --screen-grid:#1D2935; --screen-ink:#8FA2B6; --screen-hi:#DCE6F0; --curve:#FFB23F; --marker:#FF5FA2;
+  --screen:#0B1118; --screen-2:#111A24; --screen-grid:#1D2935; --screen-ink:#8FA2B6; --screen-hi:#DCE6F0; --curve:#FFB23F; --marker:#FF5FA2; --wave:#3FD3C6;
   --font-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --font-body:"Archivo","Helvetica Neue",Arial,sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -91,6 +91,7 @@ kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);b
 .transport{display:flex;flex-wrap:nowrap;align-items:center;gap:14px;padding:0 12px;height:58px}
 .tsrc{display:flex;align-items:center;gap:8px;flex:0 0 50%;min-width:0}
 .tsrc select{flex:1 1 0;width:0;font-weight:650;font-size:14.5px;padding-block:8px}
+.tlab{flex:none;font-size:13.5px;font-weight:600;color:var(--muted)}
 .play{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;min-width:104px;justify-content:center;flex:none}
 .play svg{width:15px;height:15px;fill:currentColor}
 .tctl{display:flex;align-items:center;gap:14px;flex:1 1 auto;min-width:0;justify-content:flex-end}
@@ -119,9 +120,9 @@ kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);b
 .mini-seg button[aria-pressed="true"]{background:var(--screen-grid);color:var(--screen-hi)}
 .cv{position:relative;flex:1 1 auto;min-height:120px}
 .cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-#spec,#sgOver{cursor:crosshair;touch-action:none}
-.sg-axis{position:absolute;left:0;top:0;bottom:18px;width:48px;pointer-events:none}
-.sg-axis span{position:absolute;left:6px;transform:translateY(-50%);font-family:var(--font-mono);font-size:10.5px;color:var(--screen-hi);text-shadow:0 0 3px #000,0 0 3px #000}
+#spec,#wave{cursor:crosshair;touch-action:none}
+.wv-ctl{display:flex;align-items:center;gap:6px}
+.wvsel{background:#05080c;border:1px solid var(--screen-grid);color:var(--screen-hi);font-family:var(--font-mono);font-size:10.5px;border-radius:5px;padding:2px 4px;cursor:pointer}
 .readout{display:flex;flex-wrap:wrap;gap:4px 22px;padding:6px 10px;font-family:var(--font-mono);font-size:12px;color:var(--screen-ink);border-top:1px solid #05080c;background:var(--screen-2);font-variant-numeric:tabular-nums}
 .rgrp{display:flex;align-items:baseline;gap:8px}
 .rgrp>em{font-style:normal;color:var(--screen-ink)}
@@ -242,6 +243,44 @@ table.res td.t{font-weight:700;font-family:var(--font-mono)}
 .cc-page{overflow:auto;min-height:0}
 .cc-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-block:4px 20px}
 .concepts{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.doc{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;align-items:start;max-width:1240px}
+.doc-toc{position:sticky;top:0;display:flex;flex-direction:column;gap:1px;padding:12px 8px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.doc-toc b{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:0 8px 6px}
+.doc-toc a{color:var(--ink);text-decoration:none;font-size:13.5px;padding:5px 8px;border-radius:6px}
+.doc-toc a:hover,.doc-toc a.on{background:var(--panel-2);color:var(--accent)}
+.doc-body{display:flex;flex-direction:column;gap:30px;min-width:0}
+.dsec{scroll-margin-top:6px}
+.dsec>h2{font-family:var(--font-display);font-stretch:85%;font-size:25px;margin:0 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.dsec>p,.dsec>ul{margin:0 0 12px;font-size:14.5px;line-height:1.55;max-width:85ch}
+.dsec>p.lead{font-size:15.5px}
+.dsec ul{padding-left:20px}
+.dsec li{margin-bottom:5px}
+.dh3{font-size:16px;margin:18px 0 8px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.dgrid.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.dcard h3{margin:0 0 6px;font-family:var(--font-display);font-stretch:85%;font-size:17px}
+.dcard p{margin:0 0 8px;font-size:14px;line-height:1.5}
+.dcard p:last-child{margin-bottom:0}
+.dcard ul{margin:0;font-size:14px;line-height:1.5}
+table.ref td small{display:block;font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap}
+table.samp td:first-child{width:150px}
+table.samp td:last-child{width:30%;color:var(--muted)}
+table.ref tr.grp td{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding-top:16px;border-bottom:2px solid var(--line)}
+table.ref td:first-child kbd{white-space:nowrap}
+@media (max-width:900px){
+  .doc{grid-template-columns:minmax(0,1fr)}
+  .doc-toc{position:static;flex-direction:row;flex-wrap:wrap;gap:4px}
+  .doc-toc b{width:100%}
+  .doc-toc a{background:var(--panel-2);font-size:12.5px;padding:4px 9px}
+  table.samp td:last-child{width:auto}
+  table.samp,table.samp tbody,table.samp tr,table.samp td{display:block;width:auto!important}
+  table.samp thead{display:none}
+  table.samp tr{border-bottom:1px solid var(--line);padding:8px 0}
+  table.ref.samp td{border:0;padding:3px 4px}
+  table.ref.samp tr.grp td{border-bottom:2px solid var(--line);padding-bottom:6px}
+  table.samp tr.grp{border:0}
+}
 .concept{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .concept h3{margin:0;font-family:var(--font-display);font-stretch:85%;font-size:17px}
 .concept p{margin:0;font-size:13.5px;color:var(--muted)}
@@ -252,11 +291,12 @@ table.ref th{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;te
 .tbl{overflow-x:auto}
 
 /* Visibilidade por aba */
-body.m-game #eqBox, body.m-game #filtersBox, body.m-kb #filtersBox{display:none}
+body.m-game #eqBox, body.m-game #filtersBox{display:none}
+body.m-kb #resetHint{display:none}
 body:not(.m-game) #gamePanel, body:not(.m-kb) #kbPanel{display:none}
 body.m-game #toneCtl, body.m-kb #toneCtl{display:none}
 body.m-game #eqSwitch, body.m-kb .tsrc{visibility:hidden}
-body.m-game #sampleSel{display:none}
+body.m-game #sampleSel, body.m-game .tlab{display:none}
 
 /* Telas baixas (ex.: 1366×768): versão compacta, ainda sem rolar */
 @media (max-height:820px) and (min-width:1181px){
@@ -273,7 +313,7 @@ body.m-game #sampleSel{display:none}
   .eqswitch .short{display:inline}
   .vol input{width:80px}
   .screen-head{padding:4px 10px}
-  .sg-head .legend{display:none}
+  .wv-head .legend{display:none}
   .pdesc{min-height:0;margin:6px 0 8px;font-size:12px}
   .fl small{display:none}
   .band .rg{display:none}
@@ -281,6 +321,7 @@ body.m-game #sampleSel{display:none}
   .keys{--kbh:120px}
   .game{gap:9px}
   .about p{display:none}
+  body.m-kb #kbHint, body.m-kb #resetRow, body.m-kb #eqBox .pdesc{display:none}
 }
 
 /* Telas estreitas (celular, tablet em pé): tudo empilhado, página rola */
@@ -289,7 +330,7 @@ body.m-game #sampleSel{display:none}
   .app{height:auto}
   .work{display:flex;flex-direction:column;gap:10px}
   .center,.col{display:contents}
-  .transport{order:10} #specScreen{order:20;height:360px} #sgScreen{order:30;height:300px}
+  .transport{order:10} #specScreen{order:20;height:360px} #wvScreen{order:30;height:340px}
   #eqBox{order:40} #filtersBox{order:50}
   #gamePanel,#kbPanel{order:5}
   body.m-game .transport{display:none}
@@ -341,6 +382,7 @@ body.m-game #sampleSel{display:none}
     <div class="center" id="center">
       <div class="panel transport" id="transport">
         <div class="tsrc">
+          <label class="tlab" for="sampleSel">Amostra:</label>
           <select id="sampleSel" aria-label="Amostra de som"></select>
           <button class="play" id="playBtn" aria-label="Tocar"><svg viewBox="0 0 16 16" id="playIco"><path d="M4 2.5v11l9-5.5z"/></svg><span class="ptxt" id="playTxt">Tocar</span></button>
         </div>
@@ -371,18 +413,22 @@ body.m-game #sampleSel{display:none}
         <div class="cover"><div><b>Gráficos ocultos</b><span>Use só os ouvidos. Os gráficos voltam quando a resposta for dada.</span></div></div>
       </div>
 
-      <div class="screen" id="sgScreen">
-        <div class="screen-head sg-head">
-          <span class="t">Espectrograma · frequência ao longo do tempo</span>
-          <div class="legend"><span><i style="background:linear-gradient(90deg,#0b1118,#2b3a8c,#1fa0a8,#f2e35a,#ffffff)"></i>fraco → forte</span><span>clique marca um instante</span></div>
-          <button class="sgbtn" id="freezeBtn" aria-pressed="false">Congelar</button>
+      <div class="screen" id="wvScreen">
+        <div class="screen-head wv-head">
+          <span class="t">Forma de onda · amplitude ao longo do tempo</span>
+          <div class="legend"><span><i style="background:var(--wave)"></i>som que você ouve</span><span><i style="background:var(--screen-hi);opacity:.7"></i>sem equalização</span></div>
+          <div class="wv-ctl">
+            <select class="wvsel" id="wvScale" aria-label="Escala de tempo">
+              <option value="auto" selected>Auto</option><option value="1">1 ms</option><option value="2">2 ms</option><option value="5">5 ms</option><option value="10">10 ms</option><option value="20">20 ms</option><option value="50">50 ms</option><option value="100">100 ms</option>
+            </select>
+            <button class="sgbtn" id="freezeBtn" aria-pressed="false">Congelar</button>
+          </div>
         </div>
-        <div class="cv"><canvas id="sgram" aria-label="Espectrograma"></canvas><canvas id="sgOver" aria-hidden="true"></canvas><div class="sg-axis" id="sgAxis"></div></div>
+        <div class="cv"><canvas id="wave" aria-label="Forma de onda"></canvas></div>
         <div class="readout">
-          <span class="rgrp"><em>Frequência</em><span class="rv w9" id="sF">—</span></span>
-          <span class="rgrp"><em>Nível</em><span class="rv w8" id="sD">—</span></span>
-          <span class="rgrp"><em>Tempo</em><span class="rv w8" id="sT">—</span></span>
-          <span class="rgrp"><em>Δt da marca</em><span class="rv w8" id="sM">—</span></span>
+          <span class="rgrp"><em>Cursor</em><span class="rv w9" id="wT">—</span><span class="rv w8" id="wA">—</span></span>
+          <span class="rgrp"><em>Δt da marca</em><span class="rv w9" id="wM">—</span></span>
+          <span class="rgrp"><em>1/Δt</em><span class="rv w9" id="wF">—</span></span>
         </div>
         <div class="cover"><div><b>Gráficos ocultos</b><span>Compare o original com o alterado e escolha a faixa.</span></div></div>
       </div>
@@ -402,7 +448,7 @@ body.m-game #sampleSel{display:none}
         <div class="keys" id="keys"></div>
         <div class="kbread" aria-live="polite"><span>Nota: <b id="kNote">—</b></span><span>f = <b id="kFreq">—</b></span><span>λ = <b id="kLam">—</b></span></div>
         <p class="idesc" id="instDesc"></p>
-        <p class="hint">Toque nas teclas ou use o teclado do computador: <kbd>A</kbd> a <kbd>J</kbd> (brancas), <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> (pretas), <kbd>Z</kbd>/<kbd>X</kbd> mudam a oitava.</p>
+        <p class="hint" id="kbHint">Toque nas teclas ou use o teclado do computador: <kbd>A</kbd> a <kbd>J</kbd> (brancas), <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> (pretas), <kbd>Z</kbd>/<kbd>X</kbd> mudam a oitava.</p>
       </section>
 
       <!-- Tom ajustável -->
@@ -436,9 +482,9 @@ body.m-game #sampleSel{display:none}
             <small>Corta os agudos acima do valor.</small>
           </div>
         </div>
-        <div class="rowline" style="margin-top:10px">
+        <div class="rowline" id="resetRow" style="margin-top:10px">
           <button class="btn" id="resetBtn">Zerar tudo (Neutro)</button>
-          <span class="hint">Barras: arraste · duplo clique zera · <kbd>E</kbd> liga/desliga o EQ</span>
+          <span class="hint" id="resetHint">Barras: arraste · duplo clique zera · <kbd>E</kbd> liga/desliga o EQ</span>
         </div>
       </section>
 
@@ -488,21 +534,195 @@ body.m-game #sampleSel{display:none}
   </div>
 
   <div class="cc-page" id="ccPage" hidden>
-    <div class="cc-inner">
-      <div class="concepts">
-        <div class="concept"><h3>Frequência e altura</h3><p>Frequência é o número de oscilações por segundo, medida em hertz (Hz). Quanto maior a frequência, mais agudo o som. O ouvido humano jovem percebe de cerca de 20 Hz a 20 000 Hz.</p><span class="f">v = λ · f &nbsp;→&nbsp; λ = 343 / f</span></div>
-        <div class="concept"><h3>Amplitude e intensidade</h3><p>A amplitude da onda se relaciona com a intensidade do som. O nível sonoro é medido em decibéis, uma escala logarítmica: +10 dB significam 10 vezes mais intensidade; +6 dB, cerca do dobro da amplitude.</p><span class="f">β = 10 · log(I / I₀)</span></div>
-        <div class="concept"><h3>Timbre e harmônicos</h3><p>Um som musical é a soma de uma frequência fundamental com harmônicos (múltiplos inteiros dela). A proporção entre os harmônicos define o timbre: é por isso que violão e flauta tocando a mesma nota soam diferentes. Experimente na aba Teclado.</p><span class="f">fₙ = n · f₁</span></div>
-        <div class="concept"><h3>Notas e oitavas</h3><p>Cada oitava dobra a frequência. Entre duas teclas vizinhas do teclado (um semitom), a frequência é multiplicada pela raiz duodécima de 2, cerca de 1,0595. Doze semitons formam uma oitava.</p><span class="f">f = 440 · 2^(n/12)</span></div>
-        <div class="concept"><h3>Espectro</h3><p>O espectro mostra quanta energia existe em cada frequência num instante. O eixo horizontal é logarítmico: cada divisão dobra a frequência (uma oitava).</p></div>
-        <div class="concept"><h3>Espectrograma</h3><p>É o espectro desenhado ao longo do tempo. O eixo vertical é a frequência, o horizontal é o tempo e a cor indica a intensidade. Batidas aparecem como riscos verticais; notas longas, como linhas horizontais. Clique para marcar um instante e meça o intervalo até outro ponto.</p></div>
-        <div class="concept"><h3>Equalizador e filtros</h3><p>O equalizador reforça (+dB) ou atenua (−dB) faixas específicas de frequência. Filtros passa-altas e passa-baixas cortam tudo abaixo ou acima de um limite. Nenhum deles cria frequências novas: só mudam a amplitude das que já existem.</p></div>
-      </div>
-      <div class="panel pad tbl">
-        <table class="ref">
-          <thead><tr><th>Faixa</th><th>Frequências</th><th>O que se ouve ali</th></tr></thead>
-          <tbody id="regTable"></tbody>
-        </table>
+    <div class="cc-inner doc">
+      <nav class="doc-toc" aria-label="Sumário">
+        <b>Nesta página</b>
+        <a href="#d-uso">Como usar</a>
+        <a href="#d-fund">Fundamentos</a>
+        <a href="#d-faixas">Faixas de frequência</a>
+        <a href="#d-amostras">As amostras</a>
+        <a href="#d-graficos">Os gráficos</a>
+        <a href="#d-eq">Equalizador e filtros</a>
+        <a href="#d-presets">Presets</a>
+        <a href="#d-teclado">Teclado</a>
+        <a href="#d-jogo">SpectroGame</a>
+        <a href="#d-cuidados">Cuidados e limitações</a>
+        <a href="#d-sobre">Sobre</a>
+      </nav>
+      <div class="doc-body">
+
+        <section class="dsec" id="d-uso">
+          <h2>Como usar</h2>
+          <p class="lead">O Laboratório de Equalização gera sons no próprio navegador, deixa você alterar o volume de cada faixa de frequência e mostra, ao mesmo tempo, o espectro e a forma de onda do resultado. Não precisa instalar nada nem fazer login.</p>
+          <div class="dgrid">
+            <div class="dcard"><h3>Equalizador</h3><p>Escolha uma amostra no seletor <b>Amostra</b> e clique em <b>Tocar</b>. No painel da direita, escolha um preset ou arraste as dez barras. O botão <b>Equalizador ligado/desligado</b> compara o som alterado com o original.</p></div>
+            <div class="dcard"><h3>Teclado</h3><p>Toque notas com oito timbres diferentes, inclusive o tom puro. O som passa pelo mesmo equalizador e pelos mesmos gráficos, o que permite comparar instrumentos tocando a mesma nota.</p></div>
+            <div class="dcard"><h3>SpectroGame</h3><p>Jogo de ouvido para 1 a 4 pessoas: uma faixa secreta é alterada e cada jogador tenta descobrir qual foi. Treina a percepção de frequências.</p></div>
+            <div class="dcard"><h3>Conceitos</h3><p>Esta página: a teoria por trás da ferramenta, o que é cada amostra e como cada recurso funciona.</p></div>
+          </div>
+          <h3 class="dh3">Atalhos do teclado do computador</h3>
+          <table class="ref">
+            <tbody>
+              <tr><td><kbd>Espaço</kbd></td><td>Tocar ou pausar a amostra (abas Equalizador e SpectroGame).</td></tr>
+              <tr><td><kbd>E</kbd></td><td>Ligar ou desligar o equalizador (aba Equalizador).</td></tr>
+              <tr><td><kbd>A</kbd> a <kbd>J</kbd></td><td>Teclas brancas do teclado musical, de Dó a Si.</td></tr>
+              <tr><td><kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd></td><td>Teclas pretas (sustenidos).</td></tr>
+              <tr><td><kbd>Z</kbd> / <kbd>X</kbd></td><td>Descer ou subir uma oitava.</td></tr>
+              <tr><td>Duplo clique</td><td>Numa barra do equalizador, volta a 0 dB. Na forma de onda, apaga a marca de tempo.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="dsec" id="d-fund">
+          <h2>Fundamentos</h2>
+          <p class="lead">O som é uma onda mecânica longitudinal: uma sequência de compressões e rarefações do ar que se propaga a cerca de 343 m/s (ar a 20 °C). Três grandezas descrevem o que ouvimos: a frequência (altura), a amplitude (intensidade) e a composição de harmônicos (timbre).</p>
+          <div class="concepts">
+            <div class="concept"><h3>Frequência e altura</h3><p>Frequência é o número de oscilações por segundo, medida em hertz (Hz). Quanto maior a frequência, mais agudo o som. O ouvido humano jovem percebe de cerca de 20 Hz a 20 000 Hz; com a idade, o limite superior cai.</p><span class="f">v = λ · f &nbsp;→&nbsp; λ = 343 / f</span></div>
+            <div class="concept"><h3>Período</h3><p>Período é o tempo de uma oscilação completa. É o inverso da frequência: um Lá de 440 Hz repete seu ciclo a cada 2,27 ms. Na forma de onda, é a distância entre dois ciclos iguais.</p><span class="f">T = 1 / f</span></div>
+            <div class="concept"><h3>Amplitude e intensidade</h3><p>A amplitude da onda se relaciona com a intensidade do som. O nível sonoro é medido em decibéis, uma escala logarítmica: +10 dB significam 10 vezes mais intensidade; +6 dB, cerca do dobro da amplitude; +12 dB, cerca de 16 vezes a intensidade.</p><span class="f">β = 10 · log(I / I₀)</span></div>
+            <div class="concept"><h3>Timbre e harmônicos</h3><p>Um som musical é a soma de uma frequência fundamental com harmônicos (múltiplos inteiros dela). A proporção entre os harmônicos define o timbre: é por isso que violão e flauta tocando a mesma nota soam diferentes. Experimente na aba Teclado.</p><span class="f">fₙ = n · f₁</span></div>
+            <div class="concept"><h3>Notas e oitavas</h3><p>Cada oitava dobra a frequência. Entre duas teclas vizinhas do teclado (um semitom), a frequência é multiplicada pela raiz duodécima de 2, cerca de 1,0595. Doze semitons formam uma oitava. A referência é o Lá4 = 440 Hz.</p><span class="f">f = 440 · 2^(n/12)</span></div>
+            <div class="concept"><h3>Espectro</h3><p>Qualquer som pode ser decomposto numa soma de senoides (teorema de Fourier). O espectro mostra quanta energia existe em cada frequência num instante. O eixo horizontal é logarítmico: cada divisão dobra a frequência (uma oitava), como o ouvido percebe.</p></div>
+            <div class="concept"><h3>Forma de onda</h3><p>Mostra como a pressão do ar (a amplitude) varia com o tempo, como num osciloscópio. Um tom puro é uma senoide; instrumentos diferentes tocando a mesma nota têm o mesmo período, mas formas diferentes: é o timbre visto no tempo.</p></div>
+            <div class="concept"><h3>Equalizador e filtros</h3><p>O equalizador reforça (+dB) ou atenua (−dB) faixas específicas de frequência. Filtros passa-altas e passa-baixas cortam tudo abaixo ou acima de um limite. Nenhum deles cria frequências novas: só mudam a amplitude das que já existem.</p></div>
+            <div class="concept"><h3>Formantes</h3><p>Na voz, a garganta, a boca e o nariz funcionam como ressonadores que reforçam algumas faixas de frequência, os formantes. A posição dos dois primeiros formantes é o que diferencia uma vogal da outra, qualquer que seja a nota cantada.</p></div>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-faixas">
+          <h2>Faixas de frequência</h2>
+          <p>Os nomes das faixas que aparecem no topo do espectro são os usados por técnicos de som. Os limites são aproximados.</p>
+          <div class="panel pad tbl">
+            <table class="ref">
+              <thead><tr><th>Faixa</th><th>Frequências</th><th>O que se ouve ali</th></tr></thead>
+              <tbody id="regTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-amostras">
+          <h2>As amostras</h2>
+          <p>Todas as amostras são <b>sintetizadas</b> pelo programa no momento em que você as escolhe: não há gravações nem músicas com direitos autorais. Cada uma toca em repetição contínua (<i>loop</i>) e foi desenhada para que o efeito do equalizador fique evidente.</p>
+          <div class="panel pad tbl">
+            <table class="ref samp">
+              <thead><tr><th>Amostra</th><th>Como é feita</th><th>O que observar</th></tr></thead>
+              <tbody>
+                <tr class="grp"><td colspan="3">Músicas</td></tr>
+                <tr><td><b>Pop</b><small>8 s · 120 bpm</small></td><td>Quatro instrumentos: <b>bateria</b> (bumbo, caixa e chimbal), <b>baixo</b> em colcheias (notas entre 44 e 131 Hz), <b>acordes</b> de teclado sustentados (Lá menor, Fá, Dó e Sol, entre 175 e 392 Hz, com duas vozes levemente desafinadas para soar "cheio") e uma <b>melodia</b> de sintetizador entre 392 e 784 Hz, com harmônicos ímpares mais fortes.</td><td>Ocupa o espectro inteiro: bom para comparar os presets comerciais (Rock, Jazz, Hip-Hop, Loudness…).</td></tr>
+                <tr><td><b>Baião</b><small>8 s · 120 bpm</small></td><td>Trio nordestino com cada instrumento numa faixa: <b>zabumba</b> só nos graves (batida de 113 Hz caindo para 58 Hz), <b>sanfona</b> nos médios (melodia de 349 a 698 Hz e acordes, com harmônicos até 3,2 kHz e duas palhetas levemente desafinadas, como numa sanfona real) e <b>triângulo</b> só nos agudos (parciais de 4,6 a 11,8 kHz).</td><td>Os presets <i>Só graves</i>, <i>Só médios</i> e <i>Só agudos</i> isolam cada instrumento.</td></tr>
+                <tr><td><b>Coral</b><small>8 s</small></td><td>Três vozes que entram uma de cada vez e depois cantam juntas: <b>baixo</b> na vogal "u" (98 a 147 Hz, de 0 a 2 s), <b>contralto</b> na vogal "a" (220 a 330 Hz, formantes em 750 e 1 150 Hz, de 2 a 4 s) e <b>soprano</b> na vogal "i" (740 a 988 Hz, energia concentrada entre 3 e 7 kHz, de 4 a 6 s). Todas com vibrato.</td><td>Onde cada voz aparece no espectro e qual delas sobra com cada filtro.</td></tr>
+                <tr class="grp"><td colspan="3">Instrumentos</td></tr>
+                <tr><td><b>Bateria</b><small>4 s · 120 bpm</small></td><td><b>Bumbo</b>: senoide cuja frequência cai de 160 para 42 Hz em poucos milissegundos. <b>Caixa</b>: ruído acima de 900 Hz somado a dois tons de pele (185 e 330 Hz). <b>Chimbal</b>: ruído filtrado acima de 7 kHz, curto (fechado) ou longo (aberto).</td><td>Cada peça numa faixa: graves, médios e agudos. Sons percussivos não têm nota definida.</td></tr>
+                <tr><td><b>Baixo e acordes</b><small>4 s</small></td><td>Linha de baixo em Lá (55 Hz) e Fá (43,7 Hz), com saltos de oitava e quinta, e acordes de Lá menor e Fá maior.</td><td>Nos graves, a fundamental do baixo; acima, os harmônicos que dão a ele a "definição".</td></tr>
+                <tr><td><b>Vogais sintetizadas</b><small>4 s</small></td><td>Uma voz masculina (fundamental de 125 Hz, com vibrato) dizendo A, É, I, Ó, U, 0,8 s cada. A nota é a mesma; muda só a posição dos três primeiros formantes.</td><td>Os "morros" do espectro mudam de lugar a cada vogal. Com <i>Só graves</i>, as vogais ficam quase iguais.</td></tr>
+                <tr class="grp"><td colspan="3">Sons de estudo</td></tr>
+                <tr><td><b>Nota com harmônicos</b><small>Lá 220 Hz</small></td><td>Uma nota Lá de 220 Hz com todos os harmônicos inteiros (440, 660, 880 Hz…) até cerca de 18 kHz, cada um com amplitude 1/n. Matematicamente, é uma <b>onda dente de serra</b>.</td><td>Em <i>Linha detalhada</i>, cada pico é um harmônico, igualmente espaçados de 220 Hz. Na forma de onda, a rampa da dente de serra.</td></tr>
+                <tr><td><b>Cinco tons puros</b></td><td>Cinco senoides somadas, com a mesma amplitude: 63, 250, 1 000, 4 000 e 12 000 Hz.</td><td>Mexer numa banda do equalizador sobe ou desce só o pico correspondente. Bandas sem tom não fazem efeito.</td></tr>
+                <tr><td><b>Ruído rosa</b></td><td>Ruído aleatório filtrado para ter a <b>mesma energia em cada oitava</b> (a densidade cai 3 dB por oitava).</td><td>Aparece plano nas barras de 1/3 de oitava. É o melhor som para "ouvir" o formato da curva do equalizador.</td></tr>
+                <tr><td><b>Ruído branco</b></td><td>Ruído aleatório com a <b>mesma energia em cada hertz</b>. Como as oitavas altas têm mais hertz, soa chiado.</td><td>Nas barras, sobe para os agudos. Compare com o rosa.</td></tr>
+                <tr><td><b>Varredura</b><small>8 s</small></td><td>Um tom puro que sobe de 20 Hz a 20 kHz de forma exponencial: cada oitava dura o mesmo tempo (0,8 s).</td><td>Até onde você ouve? Onde o fone ou a caixa de som param de reproduzir?</td></tr>
+                <tr><td><b>Tom ajustável</b></td><td>Um oscilador de frequência ajustável de 20 Hz a 20 kHz, com quatro formas de onda: <b>senoidal</b> (só a fundamental), <b>triangular</b> e <b>quadrada</b> (só harmônicos ímpares) e <b>dente de serra</b> (todos os harmônicos).</td><td>Relação entre forma de onda e espectro; limites da audição; medida do período.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-graficos">
+          <h2>Os gráficos</h2>
+          <div class="dgrid two">
+            <div class="dcard">
+              <h3>Espectro</h3>
+              <p>Eixo horizontal: frequência, de 20 Hz a 20 kHz, em escala logarítmica. Eixo da esquerda: nível em decibéis (0 dB é o máximo digital). Eixo da direita, em laranja: ganho do equalizador.</p>
+              <ul>
+                <li><b>Barras 1/3 oitava</b>: soma a energia em 31 faixas de um terço de oitava, como nos analisadores profissionais.</li>
+                <li><b>Linha detalhada</b>: mostra cada componente separadamente (resolução de cerca de 6 Hz). Use para ver harmônicos.</li>
+                <li>Cores = som que você ouve; <b>linha clara</b> = som original, antes do equalizador; <b>linha laranja</b> = curva do equalizador.</li>
+                <li><b>Pico</b>: frequência mais forte, a nota musical mais próxima e o comprimento de onda no ar.</li>
+                <li><b>Cursor</b>: passe o mouse para ler frequência, nível e ganho do equalizador naquele ponto.</li>
+              </ul>
+            </div>
+            <div class="dcard">
+              <h3>Forma de onda</h3>
+              <p>Eixo horizontal: tempo, em milissegundos. Eixo vertical: amplitude relativa (1 = máximo digital). Funciona como um osciloscópio.</p>
+              <ul>
+                <li><b>Disparo</b>: o desenho começa sempre no início de um ciclo, para que sons periódicos fiquem parados na tela.</li>
+                <li><b>Auto</b>: o programa mede o período e escolhe a escala para mostrar de 3 a 5 ciclos. O seletor permite fixar de 1 a 100 ms.</li>
+                <li>A escala vertical muda em degraus fixos, para que reforços e cortes apareçam como mudança real de tamanho.</li>
+                <li><b>Medir o período</b>: clique no início de um ciclo e passe o mouse sobre o início do seguinte. <b>Δt da marca</b> é o período; <b>1/Δt</b>, a frequência.</li>
+                <li><b>Congelar</b> para a imagem para medir com calma.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-eq">
+          <h2>Equalizador e filtros</h2>
+          <div class="dgrid two">
+            <div class="dcard">
+              <h3>Equalizador gráfico de 10 bandas</h3>
+              <p>Cada barra controla um filtro em sino (<i>peaking</i>) centrado em 31, 62, 125, 250, 500 Hz, 1, 2, 4, 8 e 16 kHz. As frequências dobram de uma barra para a outra: cada banda tem cerca de uma oitava de largura. O ganho vai de −12 a +12 dB.</p>
+              <p>Bandas vizinhas se sobrepõem um pouco, como num equalizador real: reforçar 1 kHz também mexe um pouco em 500 Hz e 2 kHz. A curva laranja do espectro mostra o efeito somado de todas as barras e filtros.</p>
+            </div>
+            <div class="dcard">
+              <h3>Filtros de corte</h3>
+              <p><b>Passa-altas</b> (de 20 Hz a 5 kHz): deixa passar o que está acima do valor escolhido e corta o que está abaixo. <b>Passa-baixas</b> (de 200 Hz a 20 kHz): o contrário.</p>
+              <p>São filtros de 4ª ordem (Butterworth): uma oitava além do corte, o sinal já caiu cerca de 24 dB. Na posição extrema, ficam desligados.</p>
+              <p>Um <b>limitador</b> na saída evita distorção quando muitas bandas são reforçadas ao mesmo tempo, mas ele não substitui o cuidado com o volume.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-presets">
+          <h2>Presets</h2>
+          <p>Presets são ajustes prontos. Os <b>comerciais</b> imitam as curvas dos aplicativos de música; os <b>didáticos</b> isolam faixas ou simulam situações do cotidiano. Mexer em qualquer barra leva ao preset <i>Personalizado</i>.</p>
+          <div class="panel pad tbl">
+            <table class="ref">
+              <thead><tr><th>Preset</th><th>O que faz</th></tr></thead>
+              <tbody id="presetDoc"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-teclado">
+          <h2>Teclado</h2>
+          <p>Doze teclas (uma oitava, de Dó a Si) afinadas no temperamento igual, com Lá4 = 440 Hz. O seletor de <b>oitava</b> vai de 1 (Dó1 ≈ 33 Hz) a 7 (Si7 ≈ 3 951 Hz). A <b>sustentação</b> define quanto tempo a nota dura: um tempo fixo (0,3 s, 1 s ou 3 s) ou enquanto a tecla estiver pressionada. É possível tocar várias notas ao mesmo tempo.</p>
+          <p>Os instrumentos são sintetizados a partir da receita de harmônicos de cada um e de um envelope (como o som começa, se mantém e termina):</p>
+          <div class="panel pad tbl">
+            <table class="ref">
+              <thead><tr><th>Instrumento</th><th>Como é sintetizado</th></tr></thead>
+              <tbody id="instDoc"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dsec" id="d-jogo">
+          <h2>SpectroGame</h2>
+          <p>Um filtro secreto reforça ou corta uma das faixas do som. O jogador alterna entre <b>Ouvir original</b> e <b>Ouvir alterado</b> e clica na faixa que acha que foi mexida.</p>
+          <ul>
+            <li>De 1 a 4 jogadores no mesmo computador. Em cada nível, cada jogador faz <b>3 jogadas seguidas</b> e depois passa o fone ao próximo.</li>
+            <li><b>Fácil</b>: reforço de +12 dB em 5 faixas possíveis (62, 250, 1k, 4k e 8k). <b>Médio</b>: +9 dB em 8 faixas (62 a 8k). <b>Difícil</b>: corte de −12 dB nas mesmas 8 faixas.</li>
+            <li><b>3 pontos</b> para a faixa certa, <b>1 ponto</b> para a vizinha, 0 para as demais. Máximo: 9 por nível, 27 no total.</li>
+            <li>O <b>Ruído rosa</b> é o som recomendado, porque tem energia em todas as faixas. Com músicas, o jogo fica mais difícil.</li>
+            <li>Os gráficos podem ficar ocultos até cada resposta. Depois dela, o espectro mostra a curva do filtro secreto.</li>
+          </ul>
+        </section>
+
+        <section class="dsec" id="d-cuidados">
+          <h2>Cuidados e limitações</h2>
+          <ul>
+            <li><b>Volume</b>: comece baixo, principalmente com fones. Um reforço de +12 dB multiplica a intensidade daquela faixa por cerca de 16.</li>
+            <li><b>Graves</b>: caixas de som pequenas e fones simples reproduzem mal abaixo de 80 a 100 Hz. Se as bandas de 31 e 62 Hz parecem não fazer nada, a limitação é do equipamento.</li>
+            <li><b>Agudos</b>: acima de 15 kHz, muita gente já não ouve, e alguns fones também não reproduzem.</li>
+            <li><b>Decibéis do gráfico</b>: são relativos ao máximo digital (0 dB), não ao nível sonoro no ambiente. O que importa são as diferenças.</li>
+            <li><b>Navegador</b>: use Chrome, Edge ou Firefox atualizados. Por regra dos navegadores, o som só começa depois de um clique.</li>
+          </ul>
+        </section>
+
+        <section class="dsec" id="d-sobre">
+          <h2>Sobre</h2>
+          <p>Ferramenta didática criada para as aulas de Acústica de Física IV do IFCE, Campus Baturité, pelo Prof. Paulo Santiago. Funciona inteiramente no navegador com a Web Audio API, sem bibliotecas externas, sem coleta de dados e sem gravações: todos os sons são gerados por síntese.</p>
+        </section>
+
       </div>
     </div>
   </div>
@@ -564,7 +784,7 @@ const PRESETS = [
 const SAMPLES = [
   { id: 'musica', grp: 'Músicas', n: 'Pop: bateria, baixo e melodia', hint: 'Compare os presets comerciais: Rock, Jazz, Hip-Hop…' },
   { id: 'baiao', grp: 'Músicas', n: 'Baião: zabumba, sanfona e triângulo', hint: 'Zabumba nos graves, sanfona nos médios, triângulo nos agudos. Tente isolar cada um.' },
-  { id: 'coral', grp: 'Músicas', n: 'Coral a três vozes: baixo, contralto e soprano', hint: 'Cada voz entra sozinha e depois as três cantam juntas. Veja onde cada uma aparece no espectrograma.' },
+  { id: 'coral', grp: 'Músicas', n: 'Coral a três vozes: baixo, contralto e soprano', hint: 'Cada voz entra sozinha e depois as três cantam juntas. Veja onde cada uma aparece no espectro.' },
   { id: 'bateria', grp: 'Instrumentos', n: 'Bateria', hint: 'Bumbo nos graves, caixa nos médios, chimbal nos agudos.' },
   { id: 'baixo', grp: 'Instrumentos', n: 'Baixo e acordes', hint: 'Veja onde ficam as notas graves e seus harmônicos.' },
   { id: 'vogais', grp: 'Instrumentos', n: 'Vogais sintetizadas (A, É, I, Ó, U)', hint: 'Observe os formantes mudando de vogal para vogal.' },
@@ -923,6 +1143,7 @@ function fillSampleSelect(sel, current, recommend) {
 
 /* ---------- Amostra ---------- */
 function selectSample(id, noPlay) {
+  W.mark = null;
   state.sample = id; $('sampleSel').value = id;
   $('toneCtl').hidden = id !== 'tom';
   if (!noPlay) play(); else if (state.playing) startSource();
@@ -1042,7 +1263,7 @@ $('resetBtn').onclick = () => applyPreset('neutro');
 /* ---------- Abas ---------- */
 function setMode(m) {
   const prev = state.mode;
-  state.mode = m;
+  state.mode = m; W.mark = null;
   document.body.className = 'm-' + m;
   document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-selected', b.dataset.mode === m));
   $('work').hidden = m === 'cc'; $('ccPage').hidden = m !== 'cc';
@@ -1188,6 +1409,7 @@ $('gNew').onclick = () => { G.phase = 'setup'; G.players = []; G.target = null; 
 
 /* ---------- Teclado ---------- */
 const INSTR = [
+  { id: 'puro', n: 'Tom puro (senoide)', h: [1], att: .01, dec: 0, sus: 1, rel: .05, d: '<b>Tom puro:</b> uma única frequência, sem harmônicos. No espectro aparece um só pico e a forma de onda é uma senoide. Compare com os instrumentos.' },
   { id: 'piano', n: 'Piano', h: [1, .7, .45, .35, .25, .18, .12, .09, .06, .05, .03, .02], att: .005, dec: .9, sus: 0, rel: .25, d: '<b>Piano:</b> ataque rápido e som que decai sozinho. Muitos harmônicos, que somem mais depressa que a fundamental.' },
   { id: 'orgao', n: 'Órgão', h: { 1: 1, 2: .8, 3: .5, 4: .6, 6: .3, 8: .35 }, att: .01, dec: 0, sus: 1, rel: .06, d: '<b>Órgão:</b> soma de tubos em oitavas (harmônicos 1, 2, 4, 8) e quintas (3, 6). O som não decai.' },
   { id: 'flauta', n: 'Flauta', h: [1, .22, .08, .03, .015], att: .08, dec: 0, sus: .9, rel: .12, vib: [5, .004], d: '<b>Flauta:</b> quase um tom puro. A fundamental domina e os harmônicos são fracos.' },
@@ -1196,7 +1418,7 @@ const INSTR = [
   { id: 'trompete', n: 'Trompete', h: [.55, .85, 1, .9, .75, .6, .45, .35, .25, .18, .12, .08, .05], att: .04, dec: 0, sus: .85, rel: .1, d: '<b>Trompete:</b> som brilhante; os harmônicos 2 a 5 são mais fortes que a própria fundamental.' },
   { id: 'sino', n: 'Sino (parciais inarmônicos)', part: [[1, 1, 1], [2.76, .6, .6], [5.4, .4, .35], [8.93, .25, .2]], att: .002, dec: 2.2, sus: 0, rel: .5, d: '<b>Sino:</b> as frequências dos parciais (1; 2,76; 5,4; 8,93 × f) <b>não</b> são múltiplos inteiros. Por isso a altura soa menos definida.' }
 ];
-const KB = { oct: 4, inst: 'piano', sus: '1', voices: new Map(), waves: {} };
+const KB = { oct: 4, inst: 'piano', sus: '1', voices: new Map(), waves: {}, want: new Map() };
 const WHITE = [0, 2, 4, 5, 7, 9, 11], BLACK = [1, 3, 6, 8, 10];
 const KEYMAP = { a: 0, w: 1, s: 2, e: 3, d: 4, f: 5, t: 6, g: 7, y: 8, h: 9, u: 10, j: 11 };
 const KEYLET = Object.fromEntries(Object.entries(KEYMAP).map(([k, v]) => [v, k.toUpperCase()]));
@@ -1242,7 +1464,9 @@ function instWave(inst) {
 const midiOf = k => 12 * (KB.oct + 1) + k;
 const freqOf = m => 440 * Math.pow(2, (m - 69) / 12);
 async function noteOn(k, id) {
+  const tok = {}; KB.want.set(id, tok);
   await resumeCtx();
+  if (KB.want.get(id) !== tok) return;
   if (KB.voices.has(id)) noteOff(id, true);
   const inst = INSTR.find(x => x.id === KB.inst), f = freqOf(midiOf(k)), t = now();
   const env = ctx.createGain(); env.gain.value = 0; env.connect(N.kbBus);
@@ -1261,14 +1485,14 @@ async function noteOn(k, id) {
     if (inst.vib) {
       const lfo = ctx.createOscillator(); lfo.frequency.value = inst.vib[0];
       const lg = ctx.createGain(); lg.gain.value = f * inst.vib[1];
-      lfo.connect(lg); lg.connect(o.frequency); lfo.start(t + 0.15); oscs.push(lfo);
+      lfo.connect(lg); lg.connect(o.frequency); lfo.start(t + 0.15); lfo._started = true; oscs.push(lfo);
     }
   }
   env.gain.setValueAtTime(0, t);
   env.gain.linearRampToValueAtTime(peak, t + inst.att);
   if (inst.dec) env.gain.setTargetAtTime(peak * inst.sus, t + inst.att, inst.dec / 3);
   else env.gain.setTargetAtTime(peak * inst.sus, t + inst.att, 0.05);
-  oscs.forEach(o => o.start(t));
+  oscs.forEach(o => { if (!o._started) o.start(t); });
   const v = { env, oscs, k, inst };
   KB.voices.set(id, v);
   if (KB.sus !== 'hold') v.timer = setTimeout(() => noteOff(id), +KB.sus * 1000);
@@ -1278,6 +1502,7 @@ async function noteOn(k, id) {
   $('kLam').textContent = fmtLambda(f);
 }
 function noteOff(id, fast) {
+  KB.want.delete(id);
   const v = KB.voices.get(id); if (!v) return;
   KB.voices.delete(id); clearTimeout(v.timer);
   const t = now(), rel = fast ? 0.02 : v.inst.rel;
@@ -1297,6 +1522,7 @@ $('susSel').addEventListener('change', e => { KB.sus = e.target.value; });
 function buildInst() {
   const sel = $('instSel');
   INSTR.forEach(i => { const o = document.createElement('option'); o.value = i.id; o.textContent = i.n; sel.appendChild(o); });
+  sel.value = KB.inst;
   sel.addEventListener('change', e => { KB.inst = e.target.value; renderInst(); });
   renderInst();
 }
@@ -1323,10 +1549,10 @@ window.addEventListener('blur', () => { if (KB.sus === 'hold') allNotesOff(); })
 /* ---------- Visualização ---------- */
 const css = getComputedStyle(document.documentElement);
 const C = k => css.getPropertyValue(k).trim();
-const COL = { screen: C('--screen'), grid: C('--screen-grid'), ink: C('--screen-ink'), hi: C('--screen-hi'), curve: C('--curve'), marker: C('--marker') };
+const COL = { screen: C('--screen'), grid: C('--screen-grid'), ink: C('--screen-ink'), hi: C('--screen-hi'), curve: C('--curve'), marker: C('--marker'), wave: C('--wave') };
 const FMIN = 20, FMAX = 20000, LR = Math.log(FMAX / FMIN);
-const spec = $('spec'), sg = $('sgram'), ov = $('sgOver'), sx = spec.getContext('2d'), gx = sg.getContext('2d'), ox = ov.getContext('2d');
-let dpr = 1, SW = 0, SH = 0, GW = 0, GH = 0, OW = 0, OH = 0, hoverX = null;
+const spec = $('spec'), wv = $('wave'), sx = spec.getContext('2d'), wx = wv.getContext('2d');
+let dpr = 1, SW = 0, SH = 0, OW = 0, OH = 0, hoverX = null;
 const PADL = 44, PADR = 44, PADT = 22, PADB = 24;
 const DBMIN = -100, DBMAX = 0, EQR = 18;
 const xOf = f => PADL + (SW - PADL - PADR) * Math.log(f / FMIN) / LR;
@@ -1337,18 +1563,10 @@ const isLive = () => !!ctx && (state.playing || (state.mode === 'kb' && ctx.stat
 
 function resize() {
   dpr = Math.min(2, window.devicePixelRatio || 1);
-  const r1 = spec.getBoundingClientRect(), r2 = sg.getBoundingClientRect();
+  const r1 = spec.getBoundingClientRect(), r2 = wv.getBoundingClientRect();
   if (!r1.width || !r2.width) return;
   SW = r1.width; SH = r1.height; spec.width = Math.round(SW * dpr); spec.height = Math.round(SH * dpr); sx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  OW = r2.width; OH = r2.height; ov.width = Math.round(OW * dpr); ov.height = Math.round(OH * dpr); ox.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const nGW = Math.round(OW * dpr), nGH = Math.round((OH - RULER) * dpr);
-  if (nGW !== GW || nGH !== GH) {
-    GW = nGW; GH = Math.max(10, nGH); sg.width = GW; sg.height = Math.round(OH * dpr);
-    gx.fillStyle = COL.screen; gx.fillRect(0, 0, sg.width, sg.height);
-    hist = new Float32Array(GW * GH).fill(-200); head = 0; written = 0;
-    buildSgMap();
-  }
-  buildSgAxis();
+  OW = r2.width; OH = r2.height; wv.width = Math.round(OW * dpr); wv.height = Math.round(OH * dpr); wx.setTransform(dpr, 0, 0, dpr, 0, 0);
   fitSliders();
 }
 new ResizeObserver(() => { clearTimeout(window._rz); window._rz = setTimeout(resize, 60); }).observe($('center'));
@@ -1472,104 +1690,134 @@ function drawSpectrum() {
 spec.addEventListener('pointermove', e => { const r = spec.getBoundingClientRect(); hoverX = e.clientX - r.left; });
 spec.addEventListener('pointerleave', () => { hoverX = null; });
 
-/* Espectrograma com régua de tempo, leitura e marca */
-const RULER = 18, PPS = 90;
-const LUT = (() => {
-  const stops = [[0, [11, 17, 24]], [0.25, [40, 50, 130]], [0.5, [25, 150, 165]], [0.78, [240, 222, 80]], [1, [255, 255, 255]]];
-  const t = new Uint8ClampedArray(256 * 3);
-  for (let i = 0; i < 256; i++) {
-    const x = i / 255; let k = 0; while (k < stops.length - 2 && x > stops[k + 1][0]) k++;
-    const [xa, ca] = stops[k], [xb, cb] = stops[k + 1], u = (x - xa) / (xb - xa);
-    for (let c = 0; c < 3; c++) t[i * 3 + c] = ca[c] + (cb[c] - ca[c]) * u;
+/* Forma de onda (osciloscópio com disparo) */
+const RULER = 20, WPADL = 44, WPADR = 12, WPADT = 10;
+const W = { out: null, dry: null, fOut: null, fDry: null, prev: null, start: 0, n: 0, ms: 20, autoMs: 20, period: 0, cnt: 0, _d: 0, _u: 0, hover: null, mark: null, scale: 'auto', yr: 0.5 };
+const NICE = [1, 2, 5, 10, 20, 50, 100];
+function wvX(t) { return WPADL + (OW - WPADL - WPADR) * t / W.ms; }
+function wvT(x) { return (x - WPADL) / (OW - WPADL - WPADR) * W.ms; }
+function wvY(v) { const h = OH - RULER - WPADT * 2; return WPADT + h / 2 - v / W.yr * h / 2; }
+/* período fundamental por autocorrelação, em amostra reduzida */
+function estPeriod(buf) {
+  const D = Math.max(1, Math.round(SR / 12000)), M = Math.floor(buf.length / D), x = new Float32Array(M);
+  for (let i = 0; i < M; i++) x[i] = buf[i * D];
+  const sr = SR / D, minL = Math.floor(sr / 2000), maxL = Math.min(Math.floor(sr / 30), Math.floor(M / 2)), L = M - maxL;
+  let e0 = 0; for (let i = 0; i < L; i++) e0 += x[i] * x[i];
+  if (e0 < 1e-7) return 0;
+  const r = new Float32Array(maxL + 2);
+  for (let l = minL; l <= maxL + 1; l++) { let a = 0, e1 = 0; for (let i = 0; i < L; i++) { a += x[i] * x[i + l]; e1 += x[i + l] * x[i + l]; } r[l] = a / Math.sqrt(e0 * e1 + 1e-12); }
+  let best = 0; for (let l = minL + 1; l <= maxL; l++) if (r[l] > best) best = r[l];
+  if (best < 0.55) return 0;
+  for (let l = minL + 1; l <= maxL; l++) if (r[l] >= 0.9 * best && r[l] >= r[l - 1] && r[l] >= r[l + 1]) {
+    const a = r[l - 1], b = r[l], c = r[l + 1], den = a - 2 * b + c;
+    return (l + (den ? 0.5 * (a - c) / den : 0)) * D / SR;
   }
-  return t;
-})();
-let sgMap = null, colImg = null, hist = null, head = 0, written = 0, acc = 0, sgClock = 0, mark = null, sgHover = null, lastT = 0;
-function buildSgMap() {
-  if (!GH || !ctx) return;
-  const bh = SR / 8192; sgMap = [];
-  for (let y = 0; y < GH; y++) {
-    const f1 = FMIN * Math.exp(LR * (1 - (y + 1) / GH)), f2 = FMIN * Math.exp(LR * (1 - y / GH));
-    const a = Math.max(1, Math.floor(f1 / bh)), b = Math.max(a, Math.floor(f2 / bh));
-    sgMap.push([a, b]);
-  }
-  colImg = gx.createImageData(1, GH);
+  return 0;
 }
-function buildSgAxis() {
-  const ax = $('sgAxis'); ax.innerHTML = '';
-  const h = OH - RULER;
-  [63, 250, 1000, 4000, 16000].forEach(f => {
-    const s = document.createElement('span'); s.textContent = fmtHzShort(f);
-    s.style.top = Math.max(8, h * (1 - Math.log(f / FMIN) / LR)) + 'px'; ax.appendChild(s);
-  });
-}
-function sgColumn() {
-  const d = colImg.data, col = new Float32Array(GH);
-  for (let y = 0; y < GH; y++) {
-    const [a, b] = sgMap[y]; let m = -200;
-    for (let i = a; i <= b && i < outData.length; i++) if (outData[i] > m) m = outData[i];
-    col[y] = m;
-    const v = Math.max(0, Math.min(255, Math.round((m + 115) / 95 * 255)));
-    const o = y * 4; d[o] = LUT[v * 3]; d[o + 1] = LUT[v * 3 + 1]; d[o + 2] = LUT[v * 3 + 2]; d[o + 3] = 255;
-  }
-  return col;
-}
-function drawSgram(dt) {
-  if (isLive() && !state.frozen && sgMap && GW) {
-    sgClock += dt;
-    acc += dt * PPS * dpr;
-    let n = Math.floor(acc); acc -= n; n = Math.min(n, GW);
-    if (n > 0) {
-      gx.drawImage(sg, 0, 0, GW, GH, -n, 0, GW, GH);
-      const col = sgColumn();
-      for (let k = 0; k < n; k++) { gx.putImageData(colImg, GW - n + k, 0); hist.set(col, head * GH); head = (head + 1) % GW; written++; }
+function captureWave() {
+  if (!W.out) { W.out = new Float32Array(N.anOut.fftSize); W.dry = new Float32Array(N.anDry.fftSize); }
+  N.anOut.getFloatTimeDomainData(W.out); N.anDry.getFloatTimeDomainData(W.dry);
+  const len = W.out.length;
+  if (W.cnt++ % 6 === 0) {
+    const P = estPeriod(W.out); W.period = P;
+    if (P > 0) {
+      const want = NICE.find(m => m >= 3.2 * P * 1000) || 100;
+      if (want !== W.autoMs) { W._k = W._cand === want ? (W._k || 0) + 1 : 1; W._cand = want; if (W._k >= 3) { W.autoMs = want; W._k = 0; W.prev = null; } } else W._k = 0;
     }
   }
-  drawOverlay();
+  W.ms = W.scale === 'auto' ? W.autoMs : +W.scale;
+  const n = Math.min(len - 8, Math.round(W.ms / 1000 * SR));
+  let pk = 0; for (let i = len - n; i < len; i++) pk = Math.max(pk, Math.abs(W.out[i]));
+  const hy = Math.max(0.002, 0.15 * pk);
+  const P = W.period > 0 ? Math.round(W.period * SR) : Math.round(0.02 * SR);
+  const lo = Math.max(1, len - n - 2 * P - 2), hi = len - n;
+  const cands = []; let armed = false;
+  for (let i = lo; i <= hi; i++) { const v = W.out[i]; if (v < -hy) armed = true; else if (armed && W.out[i - 1] < 0 && v >= 0) { cands.push(i); armed = false; } }
+  let start = hi;
+  if (cands.length) {
+    start = cands[cands.length - 1];
+    if (W.prev && W.prev.length === n && cands.length > 1) {
+      const m = Math.min(n, 2 * P, 4000); let bestC = -Infinity;
+      for (const c of cands) { let a = 0; for (let i = 0; i < m; i += 2) a += W.out[c + i] * W.prev[i]; if (a > bestC) { bestC = a; start = c; } }
+    }
+  }
+  W.start = start; W.n = n;
+  if (!W.fOut || W.fOut.length !== n) { W.fOut = new Float32Array(n); W.fDry = new Float32Array(n); }
+  W.fOut.set(W.out.subarray(start, start + n)); W.fDry.set(W.dry.subarray(start, start + n));
+  W.prev = W.fOut.slice();
+  /* escala vertical: degraus fixos, para comparar amplitudes */
+  let pk2 = 0; for (let i = 0; i < n; i++) pk2 = Math.max(pk2, Math.abs(W.fOut[i]), Math.abs(W.fDry[i]));
+  const want = [0.05, 0.1, 0.25, 0.5, 1].find(r => pk2 <= r * 0.95) || 1;
+  if (want > W.yr) { W._d = 0; if (++W._u >= 4) { W.yr = want; W._u = 0; } } else if (want < W.yr) { W._u = 0; if (++W._d > 60) { W.yr = want; W._d = 0; } } else { W._d = 0; W._u = 0; }
 }
-function drawOverlay() {
+function drawWave() {
   if (!OW) return;
-  ox.clearRect(0, 0, OW, OH);
+  const live = isLive();
+  if (live && !state.frozen) captureWave();
+  else if (W.scale !== 'auto' && W.fOut && !live) W.ms = +W.scale;
   const h = OH - RULER;
-  ox.fillStyle = COL.screen; ox.fillRect(0, h, OW, RULER);
-  ox.strokeStyle = COL.grid; ox.beginPath(); ox.moveTo(0, h + 0.5); ox.lineTo(OW, h + 0.5); ox.stroke();
-  ox.font = '10px "IBM Plex Mono", monospace'; ox.fillStyle = COL.ink; ox.textAlign = 'center';
-  const secs = OW / PPS;
-  for (let s = 0; s <= secs; s += 0.5) {
-    const x = Math.round(OW - s * PPS) + 0.5, major = Math.abs(s % 1) < 1e-6;
-    ox.strokeStyle = major ? COL.ink : COL.grid; ox.beginPath(); ox.moveTo(x, h); ox.lineTo(x, h + (major ? 6 : 3)); ox.stroke();
-    if (major && x > 56 && x < OW - 40) ox.fillText(s === 0 ? '' : '−' + s + ' s', x, h + 15);
+  wx.fillStyle = COL.screen; wx.fillRect(0, 0, OW, OH);
+  wx.font = '10.5px "IBM Plex Mono", monospace';
+  /* grade */
+  wx.strokeStyle = COL.grid; wx.lineWidth = 1; wx.fillStyle = COL.ink; wx.textAlign = 'right';
+  [-1, -0.5, 0, 0.5, 1].forEach(k => { const y = Math.round(wvY(k * W.yr)) + 0.5; wx.globalAlpha = k === 0 ? 1 : 0.6; wx.beginPath(); wx.moveTo(WPADL, y); wx.lineTo(OW - WPADR, y); wx.stroke(); wx.globalAlpha = 1; wx.fillText(k === 0 ? '0' : (k > 0 ? '+' : '−') + fmtNum(Math.abs(k * W.yr), W.yr <= 0.25 ? 3 : 2), WPADL - 5, y + 3); });
+  const step = W.ms / (W.ms <= 2 ? 4 : W.ms <= 5 ? 5 : W.ms <= 20 ? (W.ms / 2) : W.ms <= 50 ? 5 : 10);
+  wx.textAlign = 'center';
+  for (let t = 0; t <= W.ms + 1e-9; t += step) {
+    const x = Math.round(wvX(t)) + 0.5;
+    wx.strokeStyle = COL.grid; wx.globalAlpha = 0.6; wx.beginPath(); wx.moveTo(x, WPADT); wx.lineTo(x, h - WPADT); wx.stroke(); wx.globalAlpha = 1;
+    wx.fillStyle = COL.ink; if (x < OW - 20) wx.fillText(fmtNum(t, step < 1 ? 1 : 0), x, h + 14);
   }
-  ox.textAlign = 'right'; ox.fillStyle = COL.hi; ox.fillText(state.frozen ? 'congelado' : 'agora', OW - 3, h + 15);
-  if (mark !== null) {
-    const x = OW - (sgClock - mark) * PPS;
-    if (x >= 0) { ox.strokeStyle = COL.marker; ox.lineWidth = 1.5; ox.beginPath(); ox.moveTo(x, 0); ox.lineTo(x, h); ox.stroke(); ox.lineWidth = 1; }
+  wx.textAlign = 'right'; wx.fillStyle = COL.hi; wx.fillText('ms', OW - 2, h + 14);
+  if (state.frozen) { wx.textAlign = 'left'; wx.fillStyle = COL.marker; wx.fillText('congelado', WPADL + 4, WPADT + 10); }
+  /* traços */
+  const has = !!W.fOut && (live || state.frozen);
+  if (has) {
+    const n = W.fOut.length, x0 = WPADL, x1 = OW - WPADR, cy0 = WPADT, cy1 = h - WPADT;
+    const trace = (arr, col, lw, al) => {
+      wx.save(); wx.beginPath(); wx.rect(x0, cy0 - 1, x1 - x0, cy1 - cy0 + 2); wx.clip();
+      wx.strokeStyle = col; wx.lineWidth = lw; wx.globalAlpha = al; wx.lineJoin = 'round'; wx.beginPath();
+      const px = x1 - x0, spp = n / px;
+      if (spp <= 2) { for (let i = 0; i < n; i++) { const x = x0 + px * i / (n - 1), y = wvY(arr[i]); i ? wx.lineTo(x, y) : wx.moveTo(x, y); } }
+      else { for (let p = 0; p < px; p++) { const a = Math.floor(p * spp), b = Math.min(n, Math.floor((p + 1) * spp) + 1); let mn = 9, mx = -9; for (let i = a; i < b; i++) { const v = arr[i]; if (v < mn) mn = v; if (v > mx) mx = v; } const x = x0 + p + 0.5; if (p === 0) wx.moveTo(x, wvY(mx)); else wx.lineTo(x, wvY(mx)); wx.lineTo(x, wvY(mn)); } }
+      wx.stroke(); wx.restore();
+    };
+    trace(W.fDry, COL.hi, 1.2, 0.55);
+    trace(W.fOut, COL.wave, 2, 1);
+  } else {
+    wx.fillStyle = COL.hi; wx.font = `600 ${OW < 520 ? 12.5 : 15}px Archivo, sans-serif`; wx.textAlign = 'center';
+    wx.fillText(state.mode === 'kb' ? 'Toque uma tecla para começar' : 'Escolha uma amostra e toque em Tocar', (WPADL + OW - WPADR) / 2, h / 2 + 5);
   }
-  if (sgHover) {
-    const { x, y } = sgHover;
-    ox.strokeStyle = 'rgba(220,230,240,.55)'; ox.beginPath(); ox.moveTo(x + 0.5, 0); ox.lineTo(x + 0.5, h); ox.moveTo(0, y + 0.5); ox.lineTo(OW, y + 0.5); ox.stroke();
-    const f = FMIN * Math.exp(LR * (1 - y / h)), ago = (OW - x) / PPS;
-    setTxt('sF', fmtHz(f)); setTxt('sT', '−' + fmtNum(ago, 2) + ' s');
-    const k = Math.floor((OW - x) * dpr), row = Math.min(GH - 1, Math.max(0, Math.floor(y * dpr)));
-    let db = null; if (hist && k >= 0 && k < Math.min(written, GW)) { const idx = ((head - 1 - k) % GW + GW) % GW; db = hist[idx * GH + row]; }
-    setTxt('sD', db !== null && db > -150 ? fmtLv(db) : '—');
-    setTxt('sM', mark !== null ? fmtNum(Math.abs((sgClock - ago) - mark), 2) + ' s' : '—');
-  } else { setTxt('sF', '—'); setTxt('sD', '—'); setTxt('sT', '—'); setTxt('sM', mark !== null ? 'marcado' : '—'); }
+  /* marca e cursor */
+  if (W.mark !== null && W.mark <= W.ms) { const x = wvX(W.mark); wx.strokeStyle = COL.marker; wx.lineWidth = 1.5; wx.beginPath(); wx.moveTo(x, WPADT); wx.lineTo(x, h - WPADT); wx.stroke(); wx.lineWidth = 1; }
+  if (W.hover !== null) {
+    const x = W.hover, t = wvT(x);
+    wx.strokeStyle = 'rgba(220,230,240,.55)'; wx.beginPath(); wx.moveTo(x + 0.5, WPADT); wx.lineTo(x + 0.5, h - WPADT); wx.stroke();
+    setTxt('wT', fmtNum(t, W.ms <= 5 ? 3 : 2) + ' ms');
+    if (has) { const i = Math.max(0, Math.min(W.fOut.length - 1, Math.round(t / W.ms * (W.fOut.length - 1)))), v = W.fOut[i]; setTxt('wA', (v < 0 ? '−' : '+') + fmtNum(Math.abs(v), 3)); } else setTxt('wA', '—');
+    if (W.mark !== null) { const dt = Math.abs(t - W.mark); setTxt('wM', fmtNum(dt, dt < 10 ? 3 : 2) + ' ms'); setTxt('wF', dt > 0.02 ? fmtHz(1000 / dt) : '—'); }
+    else { setTxt('wM', '—'); setTxt('wF', '—'); }
+  } else { setTxt('wT', '—'); setTxt('wA', '—'); setTxt('wM', W.mark !== null ? 'marcado' : '—'); setTxt('wF', '—'); }
 }
-ov.addEventListener('pointermove', e => { const r = ov.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top; sgHover = y < OH - RULER ? { x, y } : null; });
-ov.addEventListener('pointerleave', () => { sgHover = null; });
-ov.addEventListener('click', e => { const r = ov.getBoundingClientRect(); const x = e.clientX - r.left; mark = sgClock - (OW - x) / PPS; });
-ov.addEventListener('dblclick', () => { mark = null; });
+const inPlot = x => x >= WPADL && x <= OW - WPADR;
+wv.addEventListener('pointermove', e => { const r = wv.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top; W.hover = inPlot(x) && y < OH - RULER ? x : null; });
+wv.addEventListener('pointerleave', () => { W.hover = null; });
+wv.addEventListener('click', e => { const r = wv.getBoundingClientRect(); const x = e.clientX - r.left; if (inPlot(x)) W.mark = wvT(x); });
+wv.addEventListener('dblclick', () => { W.mark = null; });
+$('wvScale').addEventListener('change', e => { W.scale = e.target.value; W.mark = null; W.prev = null; if (W.scale !== 'auto') W.ms = +W.scale; else W.ms = W.autoMs; });
 $('freezeBtn').onclick = () => { state.frozen = !state.frozen; $('freezeBtn').setAttribute('aria-pressed', state.frozen); $('freezeBtn').textContent = state.frozen ? 'Descongelar' : 'Congelar'; };
 
 function loop(t) {
-  const dt = lastT ? Math.min(0.1, (t - lastT) / 1000) : 0; lastT = t;
-  if (state.mode !== 'cc') { drawSpectrum(); drawSgram(dt); }
+  if (state.mode !== 'cc') { drawSpectrum(); drawWave(); }
   requestAnimationFrame(loop);
 }
 
 /* ---------- Início ---------- */
 $('regTable').innerHTML = REGIONS.map(r => `<tr><td><b>${r.n}</b></td><td style="font-family:var(--font-mono);white-space:nowrap">${fmtHzShort(r.a)} – ${fmtHzShort(r.b)}</td><td>${r.t}</td></tr>`).join('');
+const stripB = d => d.replace(/^<b>[^<]*<\/b>\s*/, '');
+$('presetDoc').innerHTML = [['com', 'Comerciais'], ['did', 'Didáticos']].map(([g, t]) => `<tr class="grp"><td colspan="2">${t}</td></tr>` + PRESETS.filter(p => p.g === g).map(p => `<tr><td><b>${p.n}</b></td><td>${p.d}</td></tr>`).join('')).join('');
+$('instDoc').innerHTML = INSTR.map(i => `<tr><td><b>${i.n}</b></td><td>${stripB(i.d)}</td></tr>`).join('');
+document.querySelector('.doc-toc').addEventListener('click', e => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); const t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 $('specMode').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; state.specMode = b.dataset.m; [...$('specMode').children].forEach(x => x.setAttribute('aria-pressed', x === b)); });
 fillSampleSelect($('sampleSel'), state.sample);
 fillSampleSelect($('gSampleSel'), G.sample, 'rosa');
@@ -1579,7 +1827,7 @@ selectSample(state.sample, true);
 $('toneFreq').value = Math.round(1000 * Math.log(440 / 20) / Math.log(1000));
 document.body.className = 'm-lab';
 try { initAudio(); } catch (e) { console.warn(e); }
-resize(); buildSgMap();
+resize();
 window.addEventListener('resize', () => { clearTimeout(window._rz2); window._rz2 = setTimeout(resize, 100); });
 requestAnimationFrame(loop);
 })();
