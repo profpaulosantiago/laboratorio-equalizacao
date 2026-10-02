@@ -1,6 +1,6 @@
 # Laboratório de Equalização
 
-Ferramenta didática de Acústica para o Ensino Médio (Física IV, IFCE). O estudante escolhe uma amostra de som, aplica presets ou ajustes próprios em um equalizador de 10 bandas e acompanha, em tempo real, o espectro e o espectrograma.
+Ferramenta didática de Acústica para o Ensino Médio (Física IV, IFCE). O estudante escolhe uma amostra de som, aplica presets ou ajustes próprios em um equalizador de 10 bandas e acompanha, em tempo real, o espectro e a forma de onda.
 
 **Acesse:** https://profpaulosantiago.github.io/laboratorio-equalizacao/
 
@@ -12,8 +12,9 @@ Ferramenta didática de Acústica para o Ensino Médio (Física IV, IFCE). O est
 - Botão para comparar o som equalizado com o original.
 - Espectro em barras de 1/3 de oitava ou linha detalhada, com a curva do equalizador sobreposta.
 - SpectroGame, jogo para 1 a 4 jogadores: três níveis, 3 jogadas seguidas por jogador em cada nível, 3 pontos por acerto e 1 pela faixa vizinha, com placar final.
-- Teclado de 12 teclas com seletor de oitava, sustentação e instrumento (piano, órgão, flauta, clarinete, violino, trompete e sino), passando pelo equalizador e pelos gráficos.
-- Espectrograma rolando em tempo real, com régua de tempo, leitura de frequência, nível e tempo sob o mouse, marca para medir intervalos e botão Congelar.
+- Teclado de 12 teclas com seletor de oitava, sustentação e instrumento (tom puro, piano, órgão, flauta, clarinete, violino, trompete e sino), passando pelo equalizador e pelos gráficos.
+- Forma de onda em tempo real, estável como num osciloscópio, com escala de tempo automática, marca para medir o período (Δt e 1/Δt) e botão Congelar.
+- Aba Conceitos com a documentação: fundamentos, o que é cada amostra, como funcionam os gráficos, o equalizador, os presets, o teclado e o jogo.
 
 ## Publicação
 
